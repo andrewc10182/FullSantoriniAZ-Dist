@@ -1,7 +1,7 @@
 class EvaluateConfig:
     def __init__(self):
         self.game_num = 31
-        self.replace_rate = 0.64
+        self.replace_rate = 0.55
         self.play_config = PlayConfig()
         self.play_config.simulation_num_per_move = 400 #800
         self.play_config.thinking_loop = 1 #2
@@ -9,7 +9,7 @@ class EvaluateConfig:
         self.play_config.change_tau_turn = 0
         self.play_config.noise_eps = 0
         self.evaluate_latest_first = True
-        self.next_generation_replace_rate = 0.64
+        self.next_generation_replace_rate = 0.55
         
 class PlayDataConfig:
     def __init__(self):
