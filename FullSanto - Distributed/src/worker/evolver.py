@@ -313,7 +313,7 @@ class EvolverWorker:
                 filename = 'win'+str(random.random()*200000//2)
             else:
                 filename = 'lose'+str(random.random()*200000//2)
-            res = dbx.files_upload(bytes('abc', 'utf8'), '/EvaluateWinCount/'+filename, dropbox.files.WriteMode.add, mute=True)
+            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/EvaluateWinCount/'+filename, dropbox.files.WriteMode.add, mute=True)
 
             if results.count(0) >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
                 print("Lose count reach", results.count(0)," so give up challenge\n")
