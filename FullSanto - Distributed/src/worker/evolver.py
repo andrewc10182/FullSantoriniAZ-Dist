@@ -57,7 +57,7 @@ class EvolverWorker:
             
             target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                          self.generations_to_keep * self.play_files_per_generation)
-            print('Target is now:',target)
+            print('Self-Play Files',self.play_files_on_dropbox,'out of',target)
             
             #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
