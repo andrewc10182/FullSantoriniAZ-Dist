@@ -34,7 +34,7 @@ class EvolverWorker:
         self.raw_timestamp=None
         self.best_is_white = True
         self.play_files_per_generation = 2 #7 # each file this number of games
-        self.max_play_files = 2
+        self.nb_plays_per_files = 2
         self.generations_to_keep = 20
         self.min_play_files_to_learn = 0
         self.play_files_on_dropbox = 0
@@ -49,7 +49,7 @@ class EvolverWorker:
             self.compile_model()
             
             self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            self.min_play_files_to_learn = min((self.version + 1) * self.play_files_per_generation, self.max_play_files)   
+            self.min_play_files_to_learn = min((self.version + 1) * self.play_files_per_generation, self.nb_plays_per_files)   
             while self.play_files_on_dropbox < self.min_play_files_to_learn:
                 print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
                 self.self_play()
@@ -91,7 +91,7 @@ class EvolverWorker:
         self.buffer = []
         idx = 1
 
-        for _ in range(self.config.play_data.nb_game_in_file):
+        for _ in range(self.nb_plays_per_files):
             self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
             self.min_play_files_to_learn = min((self.version + 1) * self.play_files_per_generation, self.max_play_files) 
             if(self.play_files_on_dropbox >= self.min_play_files_to_learn):
@@ -374,7 +374,7 @@ class EvolverWorker:
                 action = self.white.action(self.env.board)
             self.env.step(action)
         self.finish_game()
-        self.save_play_data(write=idx % self.config.play_data.nb_game_in_file == 0)
+        self.save_play_data(write=idx % self.nb_plays_per_files == 0)
         self.remove_play_data()
         return self.env
 
