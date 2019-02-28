@@ -93,7 +93,7 @@ class EvolverWorker:
 
         for _ in range(self.nb_plays_per_file):
             self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            self.min_play_files_to_learn = min((self.version + 1) * self.play_files_per_generation, self.num_plays_per_file) 
+            self.min_play_files_to_learn = min((self.version + 1) * self.play_files_per_generation, self.nb_plays_per_file) 
             if(self.play_files_on_dropbox >= self.min_play_files_to_learn):
                 print('Training files sufficient for Learning, ending Self-Play...')
                 break
@@ -411,7 +411,7 @@ class EvolverWorker:
         
         # Saving File to Drop Box
         self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-        self.min_play_files_to_learn = min((self.version + 1) * self.play_files_per_generation, self.num_plays_per_file)  
+        self.min_play_files_to_learn = min((self.version + 1) * self.play_files_per_generation, self.nb_plays_per_file)  
         if self.play_files_on_dropbox < self.min_play_files_to_learn:            
             with open(path, 'rb') as f:
                 data = f.read()
