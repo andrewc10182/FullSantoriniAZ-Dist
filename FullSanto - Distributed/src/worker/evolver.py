@@ -49,7 +49,7 @@ class EvolverWorker:
             self.compile_model()
             
             self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            self.min_play_files_to_learn = min((self.version + 1) * self.play_files_per_generation, self.nb_plays_per_file)   
+            self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation 
             while self.play_files_on_dropbox < self.min_play_files_to_learn:
                 print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
                 self.self_play()
@@ -301,13 +301,13 @@ class EvolverWorker:
             ##    results.append(ng_win)
             ##    winning_rate = sum(results) / len(results)
             if(ng_win==1 and white_is_best):
-                print('Game', game_idx,': Wins with Black.')#  Winning rate ',winning_rate)
+                print('Challenger Wins with Black.')#  Winning rate ',winning_rate)
             elif(ng_win==1 and not white_is_best):
-                print('Game', game_idx,': Wins with White.')#  Winning rate ',winning_rate)
+                print('Challenger Wins with White.')#  Winning rate ',winning_rate)
             elif(ng_win==0 and white_is_best):
-                print('Game', game_idx,': Loses with Black.')#  Winning rate ',winning_rate)
+                print('Challenger Loses with Black.')#  Winning rate ',winning_rate)
             elif(ng_win==0 and not white_is_best):
-                print('Game', game_idx,': Loses with White.')#  Winning rate ',winning_rate)
+                print('Challenger Loses with White.')#  Winning rate ',winning_rate)
             
             # Save a "Win" File in Dropbox if win, and "Lose" File if lose
             if(ng_win==1):
