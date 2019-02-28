@@ -33,9 +33,9 @@ class EvolverWorker:
         self.env = GameEnv()
         self.raw_timestamp=None
         self.best_is_white = True
-        self.play_files_per_generation = 2 #7 # each file this number of games
+        self.play_files_per_generation = 1 #7 # each file this number of games
         self.nb_plays_per_file = 2
-        self.generations_to_keep = 20
+        self.generations_to_keep = 8
         #self.min_play_files_to_learn = 0
         self.play_files_on_dropbox = 0
     def start(self):
@@ -59,7 +59,8 @@ class EvolverWorker:
 
             #while self.play_files_on_dropbox < self.min_play_files_to_learn:
             #    print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
-            self.self_play()
+            for _ in range(self.play_files_per_generation):
+                self.self_play()
             #    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
             #print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
             self.load_play_data()
@@ -74,28 +75,26 @@ class EvolverWorker:
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
             self.best_model = self.load_best_model()
             RetrainSuccessful = self.evaluate()
+           
             #if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
             #    # Other Evolvers in Distribution already got a successful competition - cease this current eval.
             #    time.sleep(20)
             #    self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
             #    print('\nThe Strongest Version found is: ',self.version,'\n')
 
-            #    # Also remove the oldest 15 files from dropbox
-            #    localfiles = get_game_data_filenames(self.config.resource)
-            #    localfilenames = []
-            #    for a in range(len(localfiles)):
-            #        localfilenames.append(localfiles[a][-32:])
-            #    dbfiles = []
-            #    for entry in self.dbx.files_list_folder('/play_data').entries:
-            #        dbfiles.append(entry.name)
-            #    localfiles_to_remove = set(localfilenames) - set(dbfiles)
-            #    print('Removing',len(localfiles_to_remove),'files from local drive')
-            #    for file in localfiles_to_remove:
-            #        print('Removing local play_data file',file)
-            #        path = os.path.join(self.config.resource.play_data_dir,file)
-            #        os.remove(path)
-            #    break
-                
+            # Remove the oldest 15 files if files is already 300
+            list = []
+            for entry in self.dbx.files_list_folder('/play_data').entries:
+                list.append(entry)
+            if(len(list)==self.play_files_per_generation * self.generations_to_keep):
+                for i in range(self.play_files_per_generation,-1,-1): #Remove the oldest 15 files in both DropBox and Local
+                    print('Removing Dropbox play_data file',i,list[i].name)
+                    self.dbx.files_delete('/play_data/'+list[i].name)
+                  
+                    print('Removing local play_data file',list[i].name)
+                    path = os.path.join(self.config.resource.play_data_dir,list[i].name)
+                    os.remove(path)
+             
             self.dataset = None
                 
     def self_play(self):
@@ -274,18 +273,7 @@ class EvolverWorker:
             res = self.dbx.files_upload(data, '/model/HistoryVersion/Version'+"{0:0>4}".format(self.version) + '.h5', dropbox.files.WriteMode.add, mute=True)
             res = self.dbx.files_upload(data, '/model/model_best_weight.h5', dropbox.files.WriteMode.overwrite, mute=True)
 
-            # Remove the oldest 15 files if files is already 300
-            list = []
-            for entry in self.dbx.files_list_folder('/play_data').entries:
-                list.append(entry)
-            if(len(list)==self.play_files_per_generation * self.generations_to_keep):
-                for i in range(self.play_files_per_generation,-1,-1): #Remove the oldest 15 files in both DropBox and Local
-                    print('Removing Dropbox play_data file',i,list[i].name)
-                    self.dbx.files_delete('/play_data/'+list[i].name)
-                  
-                    print('Removing local play_data file',list[i].name)
-                    path = os.path.join(self.config.resource.play_data_dir,list[i].name)
-                    os.remove(path)
+            
         else:
             print('Challenger unable to beat the best model...')
         return ng_is_great
@@ -446,11 +434,26 @@ class EvolverWorker:
 
     def remove_play_data(self):
         files = get_game_data_filenames(self.config.resource)
-        if len(files) < self.config.play_data.max_file_num:
+        if len(files) < self.play_files_per_generation*self.generations_to_keep:
             return
-        for i in range(len(files) - self.config.play_data.max_file_num):
+        for i in range(len(files) - self.play_files_per_generation*self.generations_to_keep):
             os.remove(files[i])
-
+            
+        # Also remove the oldest 15 files from dropbox
+        #    localfilenames = []
+        #        for a in range(len(files)):
+        #            localfilenames.append(files[a][-32:])
+        #        dbfiles = []
+        #        for entry in self.dbx.files_list_folder('/play_data').entries:
+        #            dbfiles.append(entry.name)
+        #        localfiles_to_remove = set(localfilenames) - set(dbfiles)
+        #        print('Removing',len(localfiles_to_remove),'files from local drive')
+        #        for file in localfiles_to_remove:
+        #            print('Removing local play_data file',file)
+        #            path = os.path.join(self.config.resource.play_data_dir,file)
+        #            os.remove(path)
+                break
+            
     def remove_all_play_data(self):
         files = get_game_data_filenames(self.config.resource)
         for i in range(len(files)):
