@@ -44,10 +44,11 @@ class EvolverWorker:
         self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
         print('\nThe Strongest Version found is: ',self.version,'\n')
         
-        try:
-            self.dbx.files_delete('/state/evaluating')
-        except:
-            dummy=0
+        try: self.dbx.files_delete('/state/training')
+        except: dummy=0
+        try: self.dbx.files_delete('/state/evaluating')
+        except: dummy=0
+            
         while True:
             self.model = self.load_model()
             self.compile_model()
@@ -58,7 +59,7 @@ class EvolverWorker:
 
             #while self.play_files_on_dropbox < self.min_play_files_to_learn:
             #    print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
-            #    self.self_play()
+            self.self_play()
             #    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
             #print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
             self.load_play_data()
