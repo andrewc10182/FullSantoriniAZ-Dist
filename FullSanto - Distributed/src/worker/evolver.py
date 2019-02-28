@@ -53,9 +53,10 @@ class EvolverWorker:
             self.compile_model()
             
             self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation 
+            self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation
+            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
+
             while self.play_files_on_dropbox < self.min_play_files_to_learn:
-                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
                 print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
                 self.self_play()
                 self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
