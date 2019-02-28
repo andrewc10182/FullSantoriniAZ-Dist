@@ -87,7 +87,7 @@ class EvolverWorker:
             for entry in self.dbx.files_list_folder('/play_data').entries:
                 list.append(entry)
             if(len(list)==self.play_files_per_generation * self.generations_to_keep):
-                for i in range(self.play_files_per_generation,-1,-1): #Remove the oldest 15 files in both DropBox and Local
+                for i in range(0,self.play_files_per_generation,1): #Remove the oldest 15 files in both DropBox and Local
                     print('Removing Dropbox play_data file',i,list[i].name)
                     self.dbx.files_delete('/play_data/'+list[i].name)
                   
@@ -295,19 +295,20 @@ class EvolverWorker:
         ##results = []
         winning_rate = 0
         #for game_idx in range(1,self.config.eval.game_num+1):
+        print('\n')
         while(len(self.dbx.files_list_folder('/EvaluateWinCount').entries) < self.config.eval.game_num):
             ng_win, white_is_best = self.play_game(self.best_model, ng_model)
             ##if ng_win is not None:
             ##    results.append(ng_win)
             ##    winning_rate = sum(results) / len(results)
-            if(ng_win==1 and white_is_best):
-                print('Challenger Wins with Black.')#  Winning rate ',winning_rate)
-            elif(ng_win==1 and not white_is_best):
-                print('Challenger Wins with White.')#  Winning rate ',winning_rate)
-            elif(ng_win==0 and white_is_best):
-                print('Challenger Loses with Black.')#  Winning rate ',winning_rate)
-            elif(ng_win==0 and not white_is_best):
-                print('Challenger Loses with White.')#  Winning rate ',winning_rate)
+            ##if(ng_win==1 and white_is_best):
+            ##    print('Challenger Wins with Black.')#  Winning rate ',winning_rate)
+            ##elif(ng_win==1 and not white_is_best):
+            ##    print('Challenger Wins with White.')#  Winning rate ',winning_rate)
+            ##elif(ng_win==0 and white_is_best):
+            ##    print('Challenger Loses with Black.')#  Winning rate ',winning_rate)
+            ##elif(ng_win==0 and not white_is_best):
+            ##    print('Challenger Loses with White.')#  Winning rate ',winning_rate)
             
             # Save a "Win" File in Dropbox if win, and "Lose" File if lose
             if(ng_win==1):
