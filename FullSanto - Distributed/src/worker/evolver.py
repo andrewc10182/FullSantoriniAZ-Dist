@@ -300,14 +300,14 @@ class EvolverWorker:
             ##if ng_win is not None:
             ##    results.append(ng_win)
             ##    winning_rate = sum(results) / len(results)
-            ##if(ng_win==1 and white_is_best):
-            ##    print('Game', game_idx,': Wins with Black.  Winning rate ',winning_rate)
-            ##elif(ng_win==1 and not white_is_best):
-            ##    print('Game', game_idx,': Wins with White.  Winning rate ',winning_rate)
-            ##elif(ng_win==0 and white_is_best):
-            ##    print('Game', game_idx,': Loses with Black.  Winning rate ',winning_rate)
-            ##elif(ng_win==0 and not white_is_best):
-            ##    print('Game', game_idx,': Loses with White.  Winning rate ',winning_rate)
+            if(ng_win==1 and white_is_best):
+                print('Game', game_idx,': Wins with Black.')#  Winning rate ',winning_rate)
+            elif(ng_win==1 and not white_is_best):
+                print('Game', game_idx,': Wins with White.')#  Winning rate ',winning_rate)
+            elif(ng_win==0 and white_is_best):
+                print('Game', game_idx,': Loses with Black.')#  Winning rate ',winning_rate)
+            elif(ng_win==0 and not white_is_best):
+                print('Game', game_idx,': Loses with White.')#  Winning rate ',winning_rate)
             
             # Save a "Win" File in Dropbox if win, and "Lose" File if lose
             if(ng_win==1):
@@ -322,7 +322,7 @@ class EvolverWorker:
                 if(entry.name[0] == 'w'): w +=1
                 else: l += 1
                 #print(entry.name)
-            print('Cloud Records of Wins:',w,'Lose:',l,'Total:',w+l)
+            print('Cloud Records of Wins:',w,'Lose:',l,'Total:',w+l,'Current Rate:',w/(w+l))
             
             if l >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
                 print("Lose count reach", l," so give up challenge\n")
@@ -332,8 +332,7 @@ class EvolverWorker:
                 break
 
         #winning_rate = sum(results) / len(results)
-        winning_rate = w / (w+l)
-        return winning_rate >= self.config.eval.replace_rate
+        return w / (w+l) >= self.config.eval.replace_rate
 
     def play_game(self, best_model, ng_model):
         env = GameEnv().reset()
