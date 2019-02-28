@@ -310,9 +310,9 @@ class EvolverWorker:
             
             # Save a "Win" File in Dropbox if win, and "Lose" File if lose
             if(ng_win==1):
-                res = self.dbx.files_upload('', '/EvaluateWinCount/win'+str(random.random()*20000//2), dropbox.files.WriteMode.add, mute=True)
-            else
-                res = self.dbx.files_upload('', '/EvaluateWinCount/lose'+str(random.random()*20000//2), dropbox.files.WriteMode.add, mute=True)
+                res = self.dbx.files_upload('', '/EvaluateWinCount/win'+str(random.random()*200000//2), dropbox.files.WriteMode.add, mute=True)
+            else:
+                res = self.dbx.files_upload('', '/EvaluateWinCount/lose'+str(random.random()*200000//2), dropbox.files.WriteMode.add, mute=True)
 
             if results.count(0) >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
                 print("Lose count reach", results.count(0)," so give up challenge\n")
