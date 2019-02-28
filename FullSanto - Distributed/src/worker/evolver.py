@@ -66,6 +66,7 @@ class EvolverWorker:
             #    print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
             while self.play_files_on_dropbox < target:
                 self.self_play()
+                self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
             #    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
             #print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
             self.load_play_data()
