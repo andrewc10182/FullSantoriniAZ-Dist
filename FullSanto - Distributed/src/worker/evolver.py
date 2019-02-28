@@ -87,7 +87,7 @@ class EvolverWorker:
             #    self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
             #    print('\nThe Strongest Version found is: ',self.version,'\n')
 
-            # Remove the oldest 15 files if files is already 300
+            # Remove the oldest files if files is already Files per Gen x Generations to keep
             list = []
             for entry in self.dbx.files_list_folder('/play_data').entries:
                 list.append(entry)
@@ -99,7 +99,12 @@ class EvolverWorker:
                     print('Removing local play_data file',list[i].name)
                     path = os.path.join(self.config.resource.play_data_dir,list[i].name)
                     os.remove(path)
-             
+                    
+            # Update Dropbox's Target Counter to next number
+            self.dbx.files_delete('/target/'+str(target))
+            target = min(target + self.play_files_per_generation,
+                         self.generations_to_keep * self.play_files_per_generation)
+            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)            
             self.dataset = None
                 
     def self_play(self):
