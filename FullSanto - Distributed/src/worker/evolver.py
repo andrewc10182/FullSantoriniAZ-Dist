@@ -331,9 +331,9 @@ class EvolverWorker:
                 print("Win count reach", w," so change best model\n")
                 break
             
-            # Remove all Win Lose Records and start new again
-            for entry in self.dbx.files_list_folder('/EvaluateWinCount').entries:
-                self.dbx.files_delete('/EvaluateWinCount/'+entry.name)
+        # Remove all Win Lose Records and start new again
+        for entry in self.dbx.files_list_folder('/EvaluateWinCount').entries:
+            self.dbx.files_delete('/EvaluateWinCount/'+entry.name)
             
         #winning_rate = sum(results) / len(results)
         return w / (w+l) >= self.config.eval.replace_rate
@@ -425,7 +425,7 @@ class EvolverWorker:
         
         # Saving File to Drop Box
         self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-        self.min_play_files_to_learn = min((self.version + 1) * self.play_files_per_generation, self.nb_plays_per_file)  
+        self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation 
         if self.play_files_on_dropbox < self.min_play_files_to_learn:            
             with open(path, 'rb') as f:
                 data = f.read()
