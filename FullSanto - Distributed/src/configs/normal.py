@@ -1,9 +1,9 @@
 class EvaluateConfig:
     def __init__(self):
-        self.game_num = 10
+        self.game_num = 100
         self.replace_rate = 0.6
         self.play_config = PlayConfig()
-        self.play_config.simulation_num_per_move = 4 #800
+        self.play_config.simulation_num_per_move = 50 #800
         self.play_config.thinking_loop = 1 #2
         self.play_config.c_puct = 1.5
         self.play_config.change_tau_turn = 0
@@ -18,13 +18,13 @@ class PlayDataConfig:
 
 class PlayConfig:
     def __init__(self):
-        self.simulation_num_per_move = 4 #800
+        self.simulation_num_per_move = 50 #800
         self.thinking_loop = 1
         self.logging_thinking = False
         self.c_puct = 1.5 #2
         self.noise_eps = 0.25
         self.dirichlet_alpha = 0.03
-        self.change_tau_turn = 6
+        self.change_tau_turn = 10
         self.virtual_loss = 3
         self.prediction_queue_size = 16
         self.parallel_search_num = 8 #2
@@ -34,7 +34,7 @@ class PlayConfig:
 class TrainerConfig:
     def __init__(self):
         self.batch_size = 1024  # 1024
-        self.epoch_to_checkpoint = 1 #2
+        self.epoch_to_checkpoint = 10 #2
         self.start_total_steps = 0
         self.save_model_steps = 9999 # 150
         self.load_data_steps = 9999 # 150
