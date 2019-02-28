@@ -292,21 +292,22 @@ class EvolverWorker:
         return model, model_dir
 
     def evaluate_model(self, ng_model):
-        results = []
+        ##results = []
         winning_rate = 0
-        for game_idx in range(1,self.config.eval.game_num+1):
+        #for game_idx in range(1,self.config.eval.game_num+1):
+        while(len(dbx.files_list_folder('/EvaluateWinCount').entries) < self.config.eval.game_num):
             ng_win, white_is_best = self.play_game(self.best_model, ng_model)
-            if ng_win is not None:
-                results.append(ng_win)
-                winning_rate = sum(results) / len(results)
-            if(ng_win==1 and white_is_best):
-                print('Game', game_idx,': Wins with Black.  Winning rate ',winning_rate)
-            elif(ng_win==1 and not white_is_best):
-                print('Game', game_idx,': Wins with White.  Winning rate ',winning_rate)
-            elif(ng_win==0 and white_is_best):
-                print('Game', game_idx,': Loses with Black.  Winning rate ',winning_rate)
-            elif(ng_win==0 and not white_is_best):
-                print('Game', game_idx,': Loses with White.  Winning rate ',winning_rate)
+            ##if ng_win is not None:
+            ##    results.append(ng_win)
+            ##    winning_rate = sum(results) / len(results)
+            ##if(ng_win==1 and white_is_best):
+            ##    print('Game', game_idx,': Wins with Black.  Winning rate ',winning_rate)
+            ##elif(ng_win==1 and not white_is_best):
+            ##    print('Game', game_idx,': Wins with White.  Winning rate ',winning_rate)
+            ##elif(ng_win==0 and white_is_best):
+            ##    print('Game', game_idx,': Loses with Black.  Winning rate ',winning_rate)
+            ##elif(ng_win==0 and not white_is_best):
+            ##    print('Game', game_idx,': Loses with White.  Winning rate ',winning_rate)
             
             # Save a "Win" File in Dropbox if win, and "Lose" File if lose
             if(ng_win==1):
@@ -315,14 +316,23 @@ class EvolverWorker:
                 filename = 'lose'+str(random.random()*200000//2)
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/EvaluateWinCount/'+filename, dropbox.files.WriteMode.add, mute=True)
 
-            if results.count(0) >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
-                print("Lose count reach", results.count(0)," so give up challenge\n")
+            w = 0
+            l = 0
+            for entry in self.dbx.files_list_folder('//EvaluateWinCount').entries:
+                if(entry.name[0] == 'w'): w +=1
+                else: l += 1
+                #print(entry.name)
+            print('Cloud Records of Wins:',w,'Lose:',l,'Total:',w+l)
+            
+            if l >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
+            #    print("Lose count reach", results.count(0)," so give up challenge\n")
                 break
-            if results.count(1) >= self.config.eval.game_num * self.config.eval.replace_rate:
-                print("Win count reach", results.count(1)," so change best model\n")
+            if w >= self.config.eval.game_num * self.config.eval.replace_rate:
+            #    print("Win count reach", results.count(1)," so change best model\n")
                 break
 
-        winning_rate = sum(results) / len(results)
+        #winning_rate = sum(results) / len(results)
+        winning_rate = w / (w+l)
         return winning_rate >= self.config.eval.replace_rate
 
     def play_game(self, best_model, ng_model):
