@@ -43,13 +43,13 @@ class EvolverWorker:
         self.dbx = dropbox.Dropbox(auth_token)  
         self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
         print('\nThe Strongest Version found is: ',self.version,'\n')
-        
-        try: self.dbx.files_delete('/state/training')
-        except: dummy=0
-        try: self.dbx.files_delete('/state/evaluating')
-        except: dummy=0
             
         while True:
+            try: self.dbx.files_delete('/state/training')
+            except: dummy=0
+            try: self.dbx.files_delete('/state/evaluating')
+            except: dummy=0
+            
             self.model = self.load_model()
             self.compile_model()
             
@@ -74,27 +74,27 @@ class EvolverWorker:
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
             self.best_model = self.load_best_model()
             RetrainSuccessful = self.evaluate()
-            if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
-                # Other Evolvers in Distribution already got a successful competition - cease this current eval.
-                time.sleep(20)
-                self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
-                print('\nThe Strongest Version found is: ',self.version,'\n')
+            #if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
+            #    # Other Evolvers in Distribution already got a successful competition - cease this current eval.
+            #    time.sleep(20)
+            #    self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
+            #    print('\nThe Strongest Version found is: ',self.version,'\n')
 
-                # Also remove the oldest 15 files from dropbox
-                localfiles = get_game_data_filenames(self.config.resource)
-                localfilenames = []
-                for a in range(len(localfiles)):
-                    localfilenames.append(localfiles[a][-32:])
-                dbfiles = []
-                for entry in self.dbx.files_list_folder('/play_data').entries:
-                    dbfiles.append(entry.name)
-                localfiles_to_remove = set(localfilenames) - set(dbfiles)
-                print('Removing',len(localfiles_to_remove),'files from local drive')
-                for file in localfiles_to_remove:
-                    print('Removing local play_data file',file)
-                    path = os.path.join(self.config.resource.play_data_dir,file)
-                    os.remove(path)
-                break
+            #    # Also remove the oldest 15 files from dropbox
+            #    localfiles = get_game_data_filenames(self.config.resource)
+            #    localfilenames = []
+            #    for a in range(len(localfiles)):
+            #        localfilenames.append(localfiles[a][-32:])
+            #    dbfiles = []
+            #    for entry in self.dbx.files_list_folder('/play_data').entries:
+            #        dbfiles.append(entry.name)
+            #    localfiles_to_remove = set(localfilenames) - set(dbfiles)
+            #    print('Removing',len(localfiles_to_remove),'files from local drive')
+            #    for file in localfiles_to_remove:
+            #        print('Removing local play_data file',file)
+            #        path = os.path.join(self.config.resource.play_data_dir,file)
+            #        os.remove(path)
+            #    break
                 
             self.dataset = None
                 
