@@ -33,10 +33,9 @@ class EvolverWorker:
         self.env = GameEnv()
         self.raw_timestamp=None
         self.best_is_white = True
-        self.play_files_per_generation = 15 # each file includes 10 games so each generation adds 150 games
-        self.max_play_files = 300
+        self.play_files_per_generation = 7 # each file includes 10 games so each generation adds 150 games
+        self.max_play_files = 140
         
-        # at final there are alawys 3000 games to look at from previous 20 generations
         self.min_play_files_to_learn = 0
         self.play_files_on_dropbox = 0
     def start(self):
