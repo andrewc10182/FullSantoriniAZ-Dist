@@ -36,7 +36,7 @@ class EvolverWorker:
         self.play_files_per_generation = 2 #7 # each file this number of games
         self.nb_plays_per_file = 2
         self.generations_to_keep = 20
-        self.min_play_files_to_learn = 0
+        #self.min_play_files_to_learn = 0
         self.play_files_on_dropbox = 0
     def start(self):
         auth_token = 'UlBTypwXWYAAAAAAAAAAEP6hKysZi9cQKGZTmMu128TYEEig00w3b3mJ--b_6phN'
@@ -53,14 +53,14 @@ class EvolverWorker:
             self.compile_model()
             
             self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation
+            #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
 
-            while self.play_files_on_dropbox < self.min_play_files_to_learn:
-                print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
-                self.self_play()
-                self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
+            #while self.play_files_on_dropbox < self.min_play_files_to_learn:
+            #    print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
+            #    self.self_play()
+            #    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+            #print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
             self.load_play_data()
             self.raw_timestamp=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified
             
@@ -102,11 +102,11 @@ class EvolverWorker:
         idx = 1
 
         for _ in range(self.nb_plays_per_file):
-            self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation 
-            if(self.play_files_on_dropbox >= self.min_play_files_to_learn):
-                print('Training files sufficient for Learning, ending Self-Play...')
-                break
+            #self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+            #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation 
+            #if(self.play_files_on_dropbox >= self.min_play_files_to_learn):
+            #    print('Training files sufficient for Learning, ending Self-Play...')
+            #    break
             start_time = time.time()            
             env = self.self_play_game(idx)
             end_time = time.time()
@@ -436,11 +436,11 @@ class EvolverWorker:
         
         # Saving File to Drop Box
         self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-        self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation 
-        if self.play_files_on_dropbox < self.min_play_files_to_learn:            
-            with open(path, 'rb') as f:
-                data = f.read()
-            res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
+        #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation 
+        #if self.play_files_on_dropbox < self.min_play_files_to_learn:            
+        with open(path, 'rb') as f:
+            data = f.read()
+        res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
         self.buffer = []
 
     def remove_play_data(self):
