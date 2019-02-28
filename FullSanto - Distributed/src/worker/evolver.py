@@ -295,7 +295,7 @@ class EvolverWorker:
         ##results = []
         winning_rate = 0
         #for game_idx in range(1,self.config.eval.game_num+1):
-        while(len(dbx.files_list_folder('/EvaluateWinCount').entries) < self.config.eval.game_num):
+        while(len(self.dbx.files_list_folder('/EvaluateWinCount').entries) < self.config.eval.game_num):
             ng_win, white_is_best = self.play_game(self.best_model, ng_model)
             ##if ng_win is not None:
             ##    results.append(ng_win)
@@ -325,10 +325,10 @@ class EvolverWorker:
             print('Cloud Records of Wins:',w,'Lose:',l,'Total:',w+l)
             
             if l >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
-            #    print("Lose count reach", results.count(0)," so give up challenge\n")
+                print("Lose count reach", l," so give up challenge\n")
                 break
             if w >= self.config.eval.game_num * self.config.eval.replace_rate:
-            #    print("Win count reach", results.count(1)," so change best model\n")
+                print("Win count reach", w," so change best model\n")
                 break
 
         #winning_rate = sum(results) / len(results)
