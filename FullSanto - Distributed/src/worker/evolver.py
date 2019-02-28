@@ -1,5 +1,5 @@
 import os, time
-from random import random
+import random
 from datetime import datetime
 import dropbox
 
