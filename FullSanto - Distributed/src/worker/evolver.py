@@ -452,7 +452,7 @@ class EvolverWorker:
         #            print('Removing local play_data file',file)
         #            path = os.path.join(self.config.resource.play_data_dir,file)
         #            os.remove(path)
-                break
+        #        break
             
     def remove_all_play_data(self):
         files = get_game_data_filenames(self.config.resource)
