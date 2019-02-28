@@ -57,7 +57,7 @@ class EvolverWorker:
             
             target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                          self.generations_to_keep * self.play_files_per_generation)
-            print('Self-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
+            print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
             
             #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
@@ -67,7 +67,7 @@ class EvolverWorker:
             while self.play_files_on_dropbox < target:
                 self.self_play()
                 self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-                print('Self-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
+                print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
             #    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
             #print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
             self.load_play_data()
