@@ -44,6 +44,10 @@ class EvolverWorker:
         self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
         print('\nThe Strongest Version found is: ',self.version,'\n')
         
+        try:
+            self.dbx.files_delete('/state/evaluating')
+        except:
+            dummy=0
         while True:
             self.model = self.load_model()
             self.compile_model()
@@ -51,6 +55,7 @@ class EvolverWorker:
             self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
             self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation 
             while self.play_files_on_dropbox < self.min_play_files_to_learn:
+                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
                 print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
                 self.self_play()
                 self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
@@ -59,8 +64,12 @@ class EvolverWorker:
             self.raw_timestamp=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified
             
             # Training
+            self.dbx.files_delete('/state/selfplaying')
+            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
             self.training()
             # Evaluating
+            self.dbx.files_delete('/state/training')
+            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
             self.best_model = self.load_best_model()
             RetrainSuccessful = self.evaluate()
             if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
@@ -275,7 +284,8 @@ class EvolverWorker:
                     print('Removing local play_data file',list[i].name)
                     path = os.path.join(self.config.resource.play_data_dir,list[i].name)
                     os.remove(path)
-        self.remove_model(model_dir)
+        else:
+            print('Challenger unable to beat the best model...')
         return ng_is_great
 
     def load_next_generation_model(self):
