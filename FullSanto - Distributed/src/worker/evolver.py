@@ -55,7 +55,7 @@ class EvolverWorker:
             
             self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
             
-            target = min(int(dbx.files_list_folder('/target').entries[0].name),
+            target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                          self.generations_to_keep * self.play_files_per_generation)
             print('Target is now:',target)
             
