@@ -286,10 +286,10 @@ class EvolverWorker:
         self.dbx.files_create_folder('/model/next_generation/'+rc.next_generation_model_dirname_tmpl % model_id)
         with open(config_path, 'rb') as f:
             data = f.read()
-        res = self.dbx.files_upload(data, '/model/next_generation/'+rc.next_generation_model_dirname_tmpl % model_id+'/model_best_config.json', dropbox.files.WriteMode.overwrite, mute=True)
+        res = self.dbx.files_upload(data, '/model/next_generation/'+rc.next_generation_model_dirname_tmpl % model_id+'/model_config.json', dropbox.files.WriteMode.overwrite, mute=True)
         with open(weight_path, 'rb') as f:
             data = f.read()
-        res = self.dbx.files_upload(data, '/model/next_generation/'+rc.next_generation_model_dirname_tmpl % model_id+'/model_best_weight.h5', dropbox.files.WriteMode.overwrite, mute=True)
+        res = self.dbx.files_upload(data, '/model/next_generation/'+rc.next_generation_model_dirname_tmpl % model_id+'/model_weight.h5', dropbox.files.WriteMode.overwrite, mute=True)
    
     def load_best_model(self):
         model = GameModel(self.config)
