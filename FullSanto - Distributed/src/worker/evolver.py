@@ -129,7 +129,8 @@ class EvolverWorker:
             print("Game",idx," Time=",(end_time - start_time)," sec, Turn=", env.turn, env.observation, env.winner)
             idx += 1
 
-    def load_model(self):            
+    def load_model(self):    
+        # Copies Dropbox's Best Model & Best Config to docker fodler
         for entry in self.dbx.files_list_folder('/model').entries:
             if(entry.name!='HistoryVersion' and entry.name!='next_generation'):
                 md, res = self.dbx.files_download('/model/'+entry.name)
@@ -152,7 +153,7 @@ class EvolverWorker:
                 print("Best model can not loaded!")
         else:
             latest_dir = dirs[-1]
-            print("loading latest model")
+            print("loading latest next generation model")
             config_path = os.path.join(latest_dir, rc.next_generation_model_config_filename)
             weight_path = os.path.join(latest_dir, rc.next_generation_model_weight_filename)
             model.load(config_path, weight_path)
