@@ -131,26 +131,19 @@ class EvolverWorker:
 
     def load_model(self):    
         # If there's an existing next generation model, use it
-        
-        #try:
-        next_gen_filename = self.dbx.files_list_folder('/model/next_generation').entries[0].name
-        os.makedirs('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+next_gen_filename)
-        config_filename = self.dbx.files_list_folder('/model/next_generation/'+next_gen_filename).entries[0].name
-        weight_filename = self.dbx.files_list_folder('/model/next_generation/'+next_gen_filename).entries[1].name
-        md, res = self.dbx.files_download('/model/next_generation/'+next_gen_filename+'/'+config_filename)
-        with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+next_gen_filename+'/'+config_filename, 'wb') as f:  
-            f.write(res.content)
-        md, res = self.dbx.files_download('/model/next_generation/'+next_gen_filename+'/'+weight_filename)
-        with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+next_gen_filename+'/'+weight_filename, 'wb') as f:  
-            f.write(res.content)
-        #except: dummy=0
-            
-        #for entry in self.dbx.files_list_folder('/model/next_generation').entries:
-        #    md, res = self.dbx.files_download('/model/next_generation/'+entry.name)
-        #    with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+entry.name, 'wb') as f:  
-        #    #with open('./data/model/'+entry.name, 'wb') as f:  
-        #        f.write(res.content)
-            
+        try:
+            next_gen_filename = self.dbx.files_list_folder('/model/next_generation').entries[0].name
+            os.makedirs('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+next_gen_filename)
+            config_filename = self.dbx.files_list_folder('/model/next_generation/'+next_gen_filename).entries[0].name
+            weight_filename = self.dbx.files_list_folder('/model/next_generation/'+next_gen_filename).entries[1].name
+            md, res = self.dbx.files_download('/model/next_generation/'+next_gen_filename+'/'+config_filename)
+            with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+next_gen_filename+'/'+config_filename, 'wb') as f:  
+                f.write(res.content)
+            md, res = self.dbx.files_download('/model/next_generation/'+next_gen_filename+'/'+weight_filename)
+            with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+next_gen_filename+'/'+weight_filename, 'wb') as f:  
+                f.write(res.content)
+        except: dummy=0
+              
         # Copies Dropbox's Best Model & Best Config to docker fodler
         for entry in self.dbx.files_list_folder('/model').entries:
             if(entry.name!='HistoryVersion' and entry.name!='next_generation'):
@@ -173,7 +166,7 @@ class EvolverWorker:
                 print("Best model can not loaded!")
         else:
             latest_dir = dirs[-1]
-            print("\nLoading Self.MOdel = Next Generation Model...")
+            print("\nLoading Self.Model = Next Generation Model...")
             config_path = os.path.join(latest_dir, self.config.resource.next_generation_model_config_filename)
             weight_path = os.path.join(latest_dir, self.config.resource.next_generation_model_weight_filename)
             model.load(config_path, weight_path)
