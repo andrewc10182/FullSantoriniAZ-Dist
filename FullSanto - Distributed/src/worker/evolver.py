@@ -134,6 +134,7 @@ class EvolverWorker:
         
         #try:
         next_gen_filename = self.dbx.files_list_folder('/model/next_generation').entries[0].name
+        os.makedirs('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+next_gen_filename)
         config_filename = self.dbx.files_list_folder('/model/next_generation/'+next_gen_filename).entries[0].name
         weight_filename = self.dbx.files_list_folder('/model/next_generation/'+next_gen_filename).entries[1].name
         md, res = self.dbx.files_download('/model/next_generation/'+next_gen_filename+'/'+config_filename)
