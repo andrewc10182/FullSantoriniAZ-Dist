@@ -144,11 +144,11 @@ class EvolverWorker:
             f.write(res.content)
         #except: dummy=0
             
-        for entry in self.dbx.files_list_folder('/model/next_generation').entries:
-            md, res = self.dbx.files_download('/model/next_generation/'+entry.name)
-            with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+entry.name, 'wb') as f:  
-            #with open('./data/model/'+entry.name, 'wb') as f:  
-                f.write(res.content)
+        #for entry in self.dbx.files_list_folder('/model/next_generation').entries:
+        #    md, res = self.dbx.files_download('/model/next_generation/'+entry.name)
+        #    with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+entry.name, 'wb') as f:  
+        #    #with open('./data/model/'+entry.name, 'wb') as f:  
+        #        f.write(res.content)
             
         # Copies Dropbox's Best Model & Best Config to docker fodler
         for entry in self.dbx.files_list_folder('/model').entries:
