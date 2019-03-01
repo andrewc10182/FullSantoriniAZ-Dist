@@ -130,14 +130,6 @@ class EvolverWorker:
             idx += 1
 
     def load_model(self):    
-        # Copies Dropbox's Best Model & Best Config to docker fodler
-        for entry in self.dbx.files_list_folder('/model').entries:
-            if(entry.name!='HistoryVersion' and entry.name!='next_generation'):
-                md, res = self.dbx.files_download('/model/'+entry.name)
-                with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/'+entry.name, 'wb') as f:  
-                #with open('./data/model/'+entry.name, 'wb') as f:  
-                    f.write(res.content)
-        
         # If there's an existing next generation model, use it
         try: 
             for entry in self.dbx.files_list_folder('/model/next_generation').entries:
@@ -146,7 +138,15 @@ class EvolverWorker:
                 #with open('./data/model/'+entry.name, 'wb') as f:  
                     f.write(res.content)
         except: a=0
-        
+            
+        # Copies Dropbox's Best Model & Best Config to docker fodler
+        for entry in self.dbx.files_list_folder('/model').entries:
+            if(entry.name!='HistoryVersion' and entry.name!='next_generation'):
+                md, res = self.dbx.files_download('/model/'+entry.name)
+                with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/'+entry.name, 'wb') as f:  
+                #with open('./data/model/'+entry.name, 'wb') as f:  
+                    f.write(res.content)
+
         from agent.model import GameModel
         model = GameModel(self.config)
         if self.config.opts.new or not load_best_model_weight(model):
@@ -179,7 +179,7 @@ class EvolverWorker:
         try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
         except: a=0
         for entry in self.dbx.files_list_folder('/model/next_generation').entries:
-            self.dbx.files_delete('/model/next_generation/+entry.name')
+            self.dbx.files_delete('/model/next_generation/'+entry.name)
             
         steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
         total_steps += steps
