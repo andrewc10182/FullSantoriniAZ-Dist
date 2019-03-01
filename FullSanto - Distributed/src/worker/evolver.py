@@ -33,8 +33,8 @@ class EvolverWorker:
         self.env = GameEnv()
         self.raw_timestamp=None
         self.best_is_white = True
-        self.play_files_per_generation = 2 #7 # each file this number of games
-        self.nb_plays_per_file = 1 #10
+        self.play_files_per_generation = 7 # each file this number of games
+        self.nb_plays_per_file = 10
         self.generations_to_keep = 20
         #self.min_play_files_to_learn = 0
         self.play_files_on_dropbox = 0
