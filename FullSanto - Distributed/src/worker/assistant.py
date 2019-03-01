@@ -39,17 +39,13 @@ class AssistantWorker:
         #self.min_play_files_to_learn = 0
         self.play_files_on_dropbox = 0
     def start(self):
-        print('Started Assistant file !')
         auth_token = 'UlBTypwXWYAAAAAAAAAAEP6hKysZi9cQKGZTmMu128TYEEig00w3b3mJ--b_6phN'
         self.dbx = dropbox.Dropbox(auth_token)  
         self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
         print('\nThe Strongest Version found is: ',self.version,'\n')
         
-        while True:
-            try: self.dbx.files_delete('/state/training')
-            except: dummy=0
-            try: self.dbx.files_delete('/state/evaluating')
-            except: dummy=0
+        while True:       
+            self.dbx.files_list_folder('/play_data').entries
             
             self.model = self.load_model()
             self.compile_model()
@@ -63,16 +59,10 @@ class AssistantWorker:
             #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
 
-            #while self.play_files_on_dropbox < self.min_play_files_to_learn:
-            #    print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
             while self.play_files_on_dropbox < target:
                 self.self_play()
                 self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
                 print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
-            #    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            #print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
-            self.load_play_data()
-            self.raw_timestamp=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified
             
             # Training
             self.dbx.files_delete('/state/selfplaying')
