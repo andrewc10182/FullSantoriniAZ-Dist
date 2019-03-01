@@ -276,7 +276,7 @@ class EvolverWorker:
         self.model.save(config_path, weight_path)
         
         # Also save this model to dropbox's /model/next_generation
-        with open(weight_path, 'rb') as f:
+        with open(model_dir, 'rb') as f:
             data = f.read()
         res = self.dbx.files_upload(data, '/model/next_generation/'+rc.next_generation_model_dirname_tmpl % model_id, dropbox.files.WriteMode.overwrite, mute=True)
    
