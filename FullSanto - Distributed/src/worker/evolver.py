@@ -156,7 +156,7 @@ class EvolverWorker:
         except: a=0
         dirs = get_next_generation_model_dirs(rc)
         if not dirs:
-            print("loading best model")
+            print("\nLoading best model...")
             if not load_best_model_weight(model):
                 print("Best model can not loaded!")
         else:
