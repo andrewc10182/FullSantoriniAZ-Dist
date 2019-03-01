@@ -146,12 +146,14 @@ class EvolverWorker:
             
         rc = self.config.resource
 
+        # If there's an existing next generation model, use it
         try: 
             for entry in self.dbx.files_list_folder('/model/next_generation').entries:
                 md, res = self.dbx.files_download('/model/next_generation/'+entry.name)
                 with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+entry.name, 'wb') as f:  
                 #with open('./data/model/'+entry.name, 'wb') as f:  
                     f.write(res.content)
+        except: a=0
         dirs = get_next_generation_model_dirs(rc)
         if not dirs:
             print("loading best model")
@@ -276,7 +278,7 @@ class EvolverWorker:
         # Also save this model to dropbox's /model/next_generation
         with open(weight_path, 'rb') as f:
             data = f.read()
-        res = self.dbx.files_upload(data, '/model/next_generation/'+rc.next_generation_model_weight_filename, dropbox.files.WriteMode.overwrite, mute=True)
+        res = self.dbx.files_upload(data, '/model/next_generation/'+rc.next_generation_model_dirname_tmpl % model_id, dropbox.files.WriteMode.overwrite, mute=True)
    
     def load_best_model(self):
         model = GameModel(self.config)
