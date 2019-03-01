@@ -179,16 +179,17 @@ class EvolverWorker:
 
     def training(self):
         last_load_data_step = last_save_step = total_steps = self.config.trainer.start_total_steps
+            
+        steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
+        total_steps += steps
+        self.save_current_model()
         
-        # Remove any next generation models before training a new next generation
+        # Remove the old next generation models after training the new next generation
         try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
         except: a=0
         for entry in self.dbx.files_list_folder('/model/next_generation').entries:
             self.dbx.files_delete('/model/next_generation/'+entry.name)
             
-        steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
-        total_steps += steps
-        self.save_current_model()
         last_save_step = total_steps
 
     def load_play_data(self):
