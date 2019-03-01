@@ -138,14 +138,6 @@ class EvolverWorker:
                 #with open('./data/model/'+entry.name, 'wb') as f:  
                     f.write(res.content)
         
-        from agent.model import GameModel
-        model = GameModel(self.config)
-        if self.config.opts.new or not load_best_model_weight(model):
-            model.build()
-            save_as_best_model(model)
-            
-        rc = self.config.resource
-
         # If there's an existing next generation model, use it
         try: 
             for entry in self.dbx.files_list_folder('/model/next_generation').entries:
@@ -154,14 +146,23 @@ class EvolverWorker:
                 #with open('./data/model/'+entry.name, 'wb') as f:  
                     f.write(res.content)
         except: a=0
+        
+        from agent.model import GameModel
+        model = GameModel(self.config)
+        if self.config.opts.new or not load_best_model_weight(model):
+            model.build()
+            save_as_best_model(model)
+            
+        rc = self.config.resource
+
         dirs = get_next_generation_model_dirs(rc)
         if not dirs:
-            print("\nLoading best model...")
+            print("\nLoading Self.Model = Best Model...")
             if not load_best_model_weight(model):
                 print("Best model can not loaded!")
         else:
             latest_dir = dirs[-1]
-            print("\nLoading latest next generation model...")
+            print("\nLoading Self.MOdel = Next Generation Model...")
             config_path = os.path.join(latest_dir, rc.next_generation_model_config_filename)
             weight_path = os.path.join(latest_dir, rc.next_generation_model_weight_filename)
             model.load(config_path, weight_path)
@@ -177,6 +178,10 @@ class EvolverWorker:
         
         # Remove any next generation models before training a new next generation
         try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
+        except: a=0
+        try: 
+            for entry in self.dbx.files_list_folder('/model/next_generation').entries:
+                dbx.files_delete('/model/next_generation/+entry.name')
         except: a=0
             
         steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
