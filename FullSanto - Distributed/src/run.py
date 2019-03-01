@@ -56,3 +56,6 @@ elif args.cmd == 'play_gui':
 elif args.cmd == 'evolver':
     from worker import evolver
     evolver.start(config)
+elif args.cmd == 'assistant':
+    from worker import assistant
+    assistant.start(config)
