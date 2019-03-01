@@ -44,11 +44,18 @@ class AssistantWorker:
         self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
         print('\nThe Strongest Version found is: ',self.version,'\n')
         
-        while True:       
-            self.dbx.files_list_folder('/play_data').entries
+        while True:     
+            if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
+                print('The Evolver is self-playing, Assistant will now help with generating self-play games.')
+                self.model = self.load_model()
+                self.compile_model()
+            elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
+                print('The Evolver is training , please wait...')
+                time.sleep(300)
             
-            self.model = self.load_model()
-            self.compile_model()
+            elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
+                
+            
             
             self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
             
@@ -63,16 +70,7 @@ class AssistantWorker:
                 self.self_play()
                 self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
                 print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
-            
-            # Training
-            self.dbx.files_delete('/state/selfplaying')
-            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
-            self.training()
-            # Evaluating
-            self.dbx.files_delete('/state/training')
-            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
-            self.best_model = self.load_best_model()
-            RetrainSuccessful = self.evaluate()
+         
            
             #if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
             #    # Other Evolvers in Distribution already got a successful competition - cease this current eval.
@@ -92,13 +90,6 @@ class AssistantWorker:
                     print('Removing local play_data file',list[i].name)
                     path = os.path.join(self.config.resource.play_data_dir,list[i].name)
                     os.remove(path)
-                    
-            # Update Dropbox's Target Counter to next number
-            self.dbx.files_delete('/target/'+str(target))
-            target = min(target + self.play_files_per_generation,
-                         self.generations_to_keep * self.play_files_per_generation)
-            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)            
-            self.dataset = None
                 
     def self_play(self):
         self.buffer = []
