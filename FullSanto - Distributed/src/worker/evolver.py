@@ -146,6 +146,12 @@ class EvolverWorker:
             
         rc = self.config.resource
 
+        try: 
+            for entry in self.dbx.files_list_folder('/model/next_generation').entries:
+                md, res = self.dbx.files_download('/model/next_generation/'+entry.name)
+                with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+entry.name, 'wb') as f:  
+                #with open('./data/model/'+entry.name, 'wb') as f:  
+                    f.write(res.content)
         dirs = get_next_generation_model_dirs(rc)
         if not dirs:
             print("loading best model")
@@ -153,7 +159,7 @@ class EvolverWorker:
                 print("Best model can not loaded!")
         else:
             latest_dir = dirs[-1]
-            print("loading latest next generation model")
+            print("/nLoading latest next generation model...")
             config_path = os.path.join(latest_dir, rc.next_generation_model_config_filename)
             weight_path = os.path.join(latest_dir, rc.next_generation_model_weight_filename)
             model.load(config_path, weight_path)
