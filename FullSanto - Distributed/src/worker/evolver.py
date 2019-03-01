@@ -187,7 +187,7 @@ class EvolverWorker:
         # Remove the old next generation models after training the new next generation
         try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
         except: dummy=0
-        if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1:
+        if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
             self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)
             
         last_save_step = total_steps
