@@ -82,7 +82,7 @@ class EvolverWorker:
             self.dbx.files_delete('/state/training')
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
             
-            print('/nLoading Best Model:')
+            print('\nLoading Best Model:')
             self.best_model = self.load_best_model()
             RetrainSuccessful = self.evaluate()
            
@@ -161,7 +161,7 @@ class EvolverWorker:
                 print("Best model can not loaded!")
         else:
             latest_dir = dirs[-1]
-            print("/nLoading latest next generation model...")
+            print("\nLoading latest next generation model...")
             config_path = os.path.join(latest_dir, rc.next_generation_model_config_filename)
             weight_path = os.path.join(latest_dir, rc.next_generation_model_weight_filename)
             model.load(config_path, weight_path)
@@ -286,7 +286,7 @@ class EvolverWorker:
         return model
 
     def evaluate(self):
-        print('/nLoading Challenger Model:')
+        print('\nLoading Challenger Model:')
         ng_model, model_dir = self.load_next_generation_model()
         print("start evaluate model", model_dir)
         ng_is_great = self.evaluate_model(ng_model)
