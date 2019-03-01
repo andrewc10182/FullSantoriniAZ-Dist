@@ -44,14 +44,14 @@ class EvolverWorker:
         self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
         print('\nThe Strongest Version found is: ',self.version,'\n')
         
+        self.model = self.load_model()
+        self.compile_model()
+            
         while True:
             try: self.dbx.files_delete('/state/training')
             except: dummy=0
             try: self.dbx.files_delete('/state/evaluating')
             except: dummy=0
-            
-            self.model = self.load_model()
-            self.compile_model()
             
             self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
             
@@ -77,9 +77,12 @@ class EvolverWorker:
             self.dbx.files_delete('/state/selfplaying')
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
             self.training()
+            
             # Evaluating
             self.dbx.files_delete('/state/training')
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
+            
+            print('/nLoading Best Model:')
             self.best_model = self.load_best_model()
             RetrainSuccessful = self.evaluate()
            
@@ -107,6 +110,7 @@ class EvolverWorker:
             target = min(target + self.play_files_per_generation,
                          self.generations_to_keep * self.play_files_per_generation)
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)            
+            
             self.dataset = None
                 
     def self_play(self):
@@ -162,10 +166,10 @@ class EvolverWorker:
     def training(self):
         last_load_data_step = last_save_step = total_steps = self.config.trainer.start_total_steps
         
-        try:
-            self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
-        except:
-            a=0
+        # Remove any next generation models before training a new next generation
+        try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
+        except: a=0
+            
         steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
         total_steps += steps
         self.save_current_model()
@@ -261,13 +265,19 @@ class EvolverWorker:
         config_path = os.path.join(model_dir, rc.next_generation_model_config_filename)
         weight_path = os.path.join(model_dir, rc.next_generation_model_weight_filename)
         self.model.save(config_path, weight_path)
-
+        
+        # Also save this model to dropbox's /model/next_generation
+        with open(weight_path, 'rb') as f:
+            data = f.read()
+        res = self.dbx.files_upload(data, '/model/next_generation/'+rc.next_generation_model_weight_filename, dropbox.files.WriteMode.overwrite, mute=True)
+   
     def load_best_model(self):
         model = GameModel(self.config)
         load_best_model_weight(model)
         return model
 
     def evaluate(self):
+        print('/nLoading Challenger Model:')
         ng_model, model_dir = self.load_next_generation_model()
         print("start evaluate model", model_dir)
         ng_is_great = self.evaluate_model(ng_model)
@@ -285,7 +295,6 @@ class EvolverWorker:
             res = self.dbx.files_upload(data, '/model/HistoryVersion/Version'+"{0:0>4}".format(self.version) + '.h5', dropbox.files.WriteMode.add, mute=True)
             res = self.dbx.files_upload(data, '/model/model_best_weight.h5', dropbox.files.WriteMode.overwrite, mute=True)
 
-            
         else:
             print('Challenger unable to beat the best model...')
         return ng_is_great
@@ -395,6 +404,8 @@ class EvolverWorker:
         os.remove(config_path)
         os.remove(weight_path)
         os.rmdir(model_dir)
+        for entry in self.dbx.files_list_folder('/model/next_generation').entries:
+            self.dbx.files_delete('/model/next_generation'+entry.name)
 
     def self_play_game(self, idx):
         self.env.reset()
