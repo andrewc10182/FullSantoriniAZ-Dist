@@ -152,10 +152,9 @@ class EvolverWorker:
         if self.config.opts.new or not load_best_model_weight(model):
             model.build()
             save_as_best_model(model)
-            
-        rc = self.config.resource
 
-        dirs = get_next_generation_model_dirs(rc)
+        dirs = get_next_generation_model_dirs(self.config.resource)
+        print('Dirs is',dirs)
         if not dirs:
             print("\nLoading Self.Model = Best Model...")
             if not load_best_model_weight(model):
@@ -163,8 +162,8 @@ class EvolverWorker:
         else:
             latest_dir = dirs[-1]
             print("\nLoading Self.MOdel = Next Generation Model...")
-            config_path = os.path.join(latest_dir, rc.next_generation_model_config_filename)
-            weight_path = os.path.join(latest_dir, rc.next_generation_model_weight_filename)
+            config_path = os.path.join(latest_dir, self.config.resource.next_generation_model_config_filename)
+            weight_path = os.path.join(latest_dir, self.config.resource.next_generation_model_weight_filename)
             model.load(config_path, weight_path)
         return model
 
