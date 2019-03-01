@@ -178,10 +178,8 @@ class EvolverWorker:
         # Remove any next generation models before training a new next generation
         try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
         except: a=0
-        try: 
-            for entry in self.dbx.files_list_folder('/model/next_generation').entries:
-                dbx.files_delete('/model/next_generation/+entry.name')
-        except: a=0
+        for entry in self.dbx.files_list_folder('/model/next_generation').entries:
+            self.dbx.files_delete('/model/next_generation/+entry.name')
             
         steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
         total_steps += steps
