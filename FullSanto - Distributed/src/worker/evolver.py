@@ -178,6 +178,8 @@ class EvolverWorker:
         self.model.model.compile(optimizer=self.optimizer, loss=losses)
 
     def training(self):
+        try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
+        except: dummy = 0
         last_load_data_step = last_save_step = total_steps = self.config.trainer.start_total_steps
             
         steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
@@ -185,10 +187,7 @@ class EvolverWorker:
         self.save_current_model()
         
         if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
-            self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)
-            
-            # Assuming if there's a next_generation, there is one also in the docker folder - delete it
-            self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
+            self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)   
         last_save_step = total_steps
 
     def load_play_data(self):
