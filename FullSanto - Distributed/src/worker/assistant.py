@@ -80,31 +80,45 @@ class AssistantWorker:
             idx += 1
 
     def load_model(self):            
+         # If there's an existing next generation model, use it
+        try:
+            next_gen_filename = self.dbx.files_list_folder('/model/next_generation').entries[0].name
+            os.makedirs('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+next_gen_filename)
+            config_filename = self.dbx.files_list_folder('/model/next_generation/'+next_gen_filename).entries[0].name
+            weight_filename = self.dbx.files_list_folder('/model/next_generation/'+next_gen_filename).entries[1].name
+            md, res = self.dbx.files_download('/model/next_generation/'+next_gen_filename+'/'+config_filename)
+            with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+next_gen_filename+'/'+config_filename, 'wb') as f:  
+                f.write(res.content)
+            md, res = self.dbx.files_download('/model/next_generation/'+next_gen_filename+'/'+weight_filename)
+            with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/next_generation/'+next_gen_filename+'/'+weight_filename, 'wb') as f:  
+                f.write(res.content)
+        except: dummy=0
+              
+        # Copies Dropbox's Best Model & Best Config to docker fodler
         for entry in self.dbx.files_list_folder('/model').entries:
             if(entry.name!='HistoryVersion' and entry.name!='next_generation'):
                 md, res = self.dbx.files_download('/model/'+entry.name)
                 with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/'+entry.name, 'wb') as f:  
                 #with open('./data/model/'+entry.name, 'wb') as f:  
                     f.write(res.content)
-        
+
         from agent.model import GameModel
         model = GameModel(self.config)
         if self.config.opts.new or not load_best_model_weight(model):
             model.build()
             save_as_best_model(model)
-            
-        rc = self.config.resource
 
-        dirs = get_next_generation_model_dirs(rc)
+        dirs = get_next_generation_model_dirs(self.config.resource)
+        print('Dirs is',dirs)
         if not dirs:
-            print("loading best model")
+            print("\nLoading Self.Model = Best Model...")
             if not load_best_model_weight(model):
                 print("Best model can not loaded!")
         else:
             latest_dir = dirs[-1]
-            print("loading latest model")
-            config_path = os.path.join(latest_dir, rc.next_generation_model_config_filename)
-            weight_path = os.path.join(latest_dir, rc.next_generation_model_weight_filename)
+            print("\nLoading Self.Model = Next Generation Model...")
+            config_path = os.path.join(latest_dir, self.config.resource.next_generation_model_config_filename)
+            weight_path = os.path.join(latest_dir, self.config.resource.next_generation_model_weight_filename)
             model.load(config_path, weight_path)
         return model
 
