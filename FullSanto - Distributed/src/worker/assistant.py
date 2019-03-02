@@ -44,52 +44,24 @@ class AssistantWorker:
         self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
         print('\nThe Strongest Version found is: ',self.version,'\n')
         
-        while True:     
+        # Load either the latest ng model or the best model as self model
+        self.model = self.load_model()
+        self.compile_model()
+            
+        while True:
             if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
-                print('The Evolver is self-playing, Assistant will now help with generating self-play games.')
-                self.model = self.load_model()
-                self.compile_model()
+                time.sleep(300)  
+            
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
-                print('The Evolver is training , please wait...')
-                time.sleep(300)
-            
+                time.sleep(300)  
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
-                
-            
-            
-            self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            
-            target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
-                         self.generations_to_keep * self.play_files_per_generation)
-            print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
-            
-            #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation
-            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
+                # Evaluating                
+                print('\nLoading Best Model:')
+                self.best_model = self.load_best_model()
+                RetrainSuccessful = self.evaluate()
+                time.sleep(300)
 
-            while self.play_files_on_dropbox < target:
-                self.self_play()
-                self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-                print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
-         
-           
-            #if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
-            #    # Other Evolvers in Distribution already got a successful competition - cease this current eval.
-            #    time.sleep(20)
-            #    self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
-            #    print('\nThe Strongest Version found is: ',self.version,'\n')
-
-            # Remove the oldest files if files is already Files per Gen x Generations to keep
-            list = []
-            for entry in self.dbx.files_list_folder('/play_data').entries:
-                list.append(entry)
-            if(len(list)==self.play_files_per_generation * self.generations_to_keep):
-                for i in range(0,self.play_files_per_generation,1): #Remove the oldest 15 files in both DropBox and Local
-                    print('Removing Dropbox play_data file',i,list[i].name)
-                    self.dbx.files_delete('/play_data/'+list[i].name)
-                  
-                    print('Removing local play_data file',list[i].name)
-                    path = os.path.join(self.config.resource.play_data_dir,list[i].name)
-                    os.remove(path)
+self.dataset = None
                 
     def self_play(self):
         self.buffer = []
@@ -318,18 +290,6 @@ class AssistantWorker:
                 #print(entry.name)
             print('Cloud Records of Wins:',w,'Lose:',l,'Total:',w+l,'Current Rate:',w/(w+l))
             
-            if l >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
-                print("Lose count reach", l," so give up challenge\n")
-                break
-            if w >= self.config.eval.game_num * self.config.eval.replace_rate:
-                print("Win count reach", w," so change best model\n")
-                break
-            
-        # Remove all Win Lose Records and start new again
-        for entry in self.dbx.files_list_folder('/EvaluateWinCount').entries:
-            self.dbx.files_delete('/EvaluateWinCount/'+entry.name)
-            
-        #winning_rate = sum(results) / len(results)
         return w / (w+l) >= self.config.eval.replace_rate
 
     def play_game(self, best_model, ng_model):
