@@ -31,7 +31,6 @@ class EvolverWorker:
         self.dbx = None
         self.version = 0 # Change to dynamic lookup from Drop Box Files
         self.env = GameEnv()
-        self.raw_timestamp=None
         self.best_is_white = True
         self.play_files_per_generation = 7 # each file this number of games
         self.nb_plays_per_file = 10
@@ -70,13 +69,14 @@ class EvolverWorker:
                     print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
                 #    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
                 #print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
-                self.load_play_data()
-                self.raw_timestamp=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified
             
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
                 # Training
                 self.dbx.files_delete('/state/selfplaying')
                 res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
+                
+                self.load_play_data()
+                
                 self.training()
             
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
@@ -88,12 +88,6 @@ class EvolverWorker:
                 print('\nLoading Best Model:')
                 self.best_model = self.load_best_model()
                 RetrainSuccessful = self.evaluate()
-
-                #if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
-                #    # Other Evolvers in Distribution already got a successful competition - cease this current eval.
-                #    time.sleep(20)
-                #    self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
-                #    print('\nThe Strongest Version found is: ',self.version,'\n')
 
                 # Remove the oldest files if files is already Files per Gen x Generations to keep
                 list = []
@@ -386,11 +380,11 @@ class EvolverWorker:
     def play_game(self, best_model, ng_model):
         env = GameEnv().reset()
 
-        if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
-            print('A newer model version is available - giving up this match')
-            ng_win = 0
-            self.best_is_white= True
-            return ng_win, self.best_is_white
+        #if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
+        #    print('A newer model version is available - giving up this match')
+        #    ng_win = 0
+        #    self.best_is_white= True
+        #    return ng_win, self.best_is_white
     
         best_player = GamePlayer(self.config, best_model, play_config=self.config.eval.play_config)
         ng_player = GamePlayer(self.config, ng_model, play_config=self.config.eval.play_config)
