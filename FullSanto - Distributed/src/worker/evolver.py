@@ -69,22 +69,22 @@ class EvolverWorker:
                     print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
                 #    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
                 #print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
+                  
+                self.dbx.files_delete('/state/selfplaying')
+                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)   
             
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
                 # Training
-                self.dbx.files_delete('/state/selfplaying')
-                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
-                
                 self.load_play_data()
                 
                 self.training()
             
-            elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
-                # Evaluating
                 try: self.dbx.files_delete('/state/training')
                 except: dummy=0
                 res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
 
+            elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
+                # Evaluating                
                 print('\nLoading Best Model:')
                 self.best_model = self.load_best_model()
                 RetrainSuccessful = self.evaluate()
