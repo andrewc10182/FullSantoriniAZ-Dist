@@ -31,7 +31,6 @@ class AssistantWorker:
         self.dbx = None
         self.version = 0 # Change to dynamic lookup from Drop Box Files
         self.env = GameEnv()
-        self.raw_timestamp=None
         self.best_is_white = True
         self.play_files_per_generation = 7 # each file this number of games
         self.nb_plays_per_file = 10
@@ -308,12 +307,6 @@ class AssistantWorker:
 
     def play_game(self, best_model, ng_model):
         env = GameEnv().reset()
-
-        if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
-            print('A newer model version is available - giving up this match')
-            ng_win = 0
-            self.best_is_white= True
-            return ng_win, self.best_is_white
     
         best_player = GamePlayer(self.config, best_model, play_config=self.config.eval.play_config)
         ng_player = GamePlayer(self.config, ng_model, play_config=self.config.eval.play_config)
