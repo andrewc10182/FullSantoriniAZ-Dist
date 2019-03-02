@@ -61,7 +61,7 @@ class AssistantWorker:
                 RetrainSuccessful = self.evaluate()
                 time.sleep(300)
 
-self.dataset = None
+                self.dataset = None
                 
     def self_play(self):
         self.buffer = []
