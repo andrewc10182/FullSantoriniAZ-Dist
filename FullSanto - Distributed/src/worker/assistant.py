@@ -238,23 +238,7 @@ class AssistantWorker:
         ng_model, model_dir = self.load_next_generation_model()
         print("start evaluate model", model_dir)
         ng_is_great = self.evaluate_model(ng_model)
-        if ng_is_great:
-            print("New Model become best model:", model_dir)
-            save_as_best_model(ng_model)
-            self.best_model = ng_model
-            self.remove_model(model_dir) # Remove all Next Generation
-
-            # Save to Drop Box inside History Version folder & save as best model in /model folder
-            self.version = self.version+1
-            with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/model_best_weight.h5', 'rb') as f:
-            #with open('./data/model/model_best_weight.h5', 'rb') as f:
-                data = f.read()
-            res = self.dbx.files_upload(data, '/model/HistoryVersion/Version'+"{0:0>4}".format(self.version) + '.h5', dropbox.files.WriteMode.add, mute=True)
-            res = self.dbx.files_upload(data, '/model/model_best_weight.h5', dropbox.files.WriteMode.overwrite, mute=True)
-
-            
-        else:
-            print('Challenger unable to beat the best model...')
+        
         return ng_is_great
 
     def load_next_generation_model(self):
@@ -303,7 +287,7 @@ class AssistantWorker:
                 #print(entry.name)
             print('Cloud Records of Wins:',w,'Lose:',l,'Total:',w+l,'Current Rate:',w/(w+l))
             
-        return w / (w+l) >= self.config.eval.replace_rate
+        return True
 
     def play_game(self, best_model, ng_model):
         env = GameEnv().reset()
