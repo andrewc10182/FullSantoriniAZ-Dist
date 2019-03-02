@@ -44,74 +44,77 @@ class EvolverWorker:
         self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
         print('\nThe Strongest Version found is: ',self.version,'\n')
         
+        # Load either the latest ng model or the best model as self model
         self.model = self.load_model()
         self.compile_model()
             
         while True:
-            try: self.dbx.files_delete('/state/training')
-            except: dummy=0
-            try: self.dbx.files_delete('/state/evaluating')
-            except: dummy=0
-            
-            self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            
-            target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
-                         self.generations_to_keep * self.play_files_per_generation)
-            print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
-            
-            #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation
-            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
-
-            #while self.play_files_on_dropbox < self.min_play_files_to_learn:
-            #    print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
-            while self.play_files_on_dropbox < target:
-                self.self_play()
-                self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-                print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
-            #    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            #print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
-            self.load_play_data()
-            self.raw_timestamp=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified
-            
-            # Training
-            self.dbx.files_delete('/state/selfplaying')
-            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
-            self.training()
-            
-            # Evaluating
-            self.dbx.files_delete('/state/training')
-            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
-            
-            print('\nLoading Best Model:')
-            self.best_model = self.load_best_model()
-            RetrainSuccessful = self.evaluate()
-           
-            #if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
-            #    # Other Evolvers in Distribution already got a successful competition - cease this current eval.
-            #    time.sleep(20)
-            #    self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
-            #    print('\nThe Strongest Version found is: ',self.version,'\n')
-
-            # Remove the oldest files if files is already Files per Gen x Generations to keep
-            list = []
-            for entry in self.dbx.files_list_folder('/play_data').entries:
-                list.append(entry)
-            if(len(list)==self.play_files_per_generation * self.generations_to_keep):
-                for i in range(0,self.play_files_per_generation,1): #Remove the oldest 15 files in both DropBox and Local
-                    print('Removing Dropbox play_data file',i,list[i].name)
-                    self.dbx.files_delete('/play_data/'+list[i].name)
-                  
-                    print('Removing local play_data file',list[i].name)
-                    path = os.path.join(self.config.resource.play_data_dir,list[i].name)
-                    os.remove(path)
+            if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
+                try: self.dbx.files_delete('/state/evaluating')
+                except: dummy=0
                     
-            # Update Dropbox's Target Counter to next number
-            self.dbx.files_delete('/target/'+str(target))
-            target = min(target + self.play_files_per_generation,
-                         self.generations_to_keep * self.play_files_per_generation)
-            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)            
+                self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+
+                target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+                             self.generations_to_keep * self.play_files_per_generation)
+                print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
+
+                #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation
+                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
+
+                #while self.play_files_on_dropbox < self.min_play_files_to_learn:
+                #    print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
+                while self.play_files_on_dropbox < target:
+                    self.self_play()
+                    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+                    print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
+                #    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+                #print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
+                self.load_play_data()
+                self.raw_timestamp=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified
             
-            self.dataset = None
+            elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
+                # Training
+                self.dbx.files_delete('/state/selfplaying')
+                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
+                self.training()
+            
+            elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
+                # Evaluating
+                try: self.dbx.files_delete('/state/training')
+                except: dummy=0
+                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
+
+                print('\nLoading Best Model:')
+                self.best_model = self.load_best_model()
+                RetrainSuccessful = self.evaluate()
+
+                #if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
+                #    # Other Evolvers in Distribution already got a successful competition - cease this current eval.
+                #    time.sleep(20)
+                #    self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
+                #    print('\nThe Strongest Version found is: ',self.version,'\n')
+
+                # Remove the oldest files if files is already Files per Gen x Generations to keep
+                list = []
+                for entry in self.dbx.files_list_folder('/play_data').entries:
+                    list.append(entry)
+                if(len(list)==self.play_files_per_generation * self.generations_to_keep):
+                    for i in range(0,self.play_files_per_generation,1): #Remove the oldest 15 files in both DropBox and Local
+                        print('Removing Dropbox play_data file',i,list[i].name)
+                        self.dbx.files_delete('/play_data/'+list[i].name)
+
+                        print('Removing local play_data file',list[i].name)
+                        path = os.path.join(self.config.resource.play_data_dir,list[i].name)
+                        os.remove(path)
+
+                # Update Dropbox's Target Counter to next number
+                self.dbx.files_delete('/target/'+str(target))
+                target = min(target + self.play_files_per_generation,
+                             self.generations_to_keep * self.play_files_per_generation)
+                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)            
+
+                self.dataset = None
                 
     def self_play(self):
         self.buffer = []
