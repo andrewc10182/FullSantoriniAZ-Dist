@@ -109,6 +109,8 @@ class EvolverWorker:
                         os.remove(path)
 
                 # Update Dropbox's Target Counter to next number
+                target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+                             self.generations_to_keep * self.play_files_per_generation)
                 self.dbx.files_delete('/target/'+str(target))
                 target = min(target + self.play_files_per_generation,
                              self.generations_to_keep * self.play_files_per_generation)
