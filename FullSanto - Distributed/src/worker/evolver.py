@@ -49,17 +49,12 @@ class EvolverWorker:
             
         while True:
             if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
-                try: self.dbx.files_delete('/state/evaluating')
-                except: dummy=0
-                    
+                
                 self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
 
                 target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                              self.generations_to_keep * self.play_files_per_generation)
                 print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
-
-                #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation
-                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
 
                 #while self.play_files_on_dropbox < self.min_play_files_to_learn:
                 #    print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
@@ -114,6 +109,9 @@ class EvolverWorker:
                              self.generations_to_keep * self.play_files_per_generation)
                 res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)            
 
+                try: self.dbx.files_delete('/state/evaluating')
+                except: dummy=0  
+                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
                 self.dataset = None
                 
     def self_play(self):
