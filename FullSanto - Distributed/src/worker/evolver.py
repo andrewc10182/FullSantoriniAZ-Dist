@@ -79,6 +79,10 @@ class EvolverWorker:
                 
                 self.training()
             
+                # Remove all Win Lose Records and start new again
+                for entry in self.dbx.files_list_folder('/EvaluateWinCount').entries:
+                    self.dbx.files_delete('/EvaluateWinCount/'+entry.name)
+                    
                 try: self.dbx.files_delete('/state/training')
                 except: dummy=0
                 res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
@@ -331,28 +335,13 @@ class EvolverWorker:
         return model, model_dir
 
     def evaluate_model(self, ng_model):
-        ##results = []
-        winning_rate = 0
         #for game_idx in range(1,self.config.eval.game_num+1):
         while(len(self.dbx.files_list_folder('/EvaluateWinCount').entries) < self.config.eval.game_num):
             ng_win, white_is_best = self.play_game(self.best_model, ng_model)
-            ##if ng_win is not None:
-            ##    results.append(ng_win)
-            ##    winning_rate = sum(results) / len(results)
-            ##if(ng_win==1 and white_is_best):
-            ##    print('Challenger Wins with Black.')#  Winning rate ',winning_rate)
-            ##elif(ng_win==1 and not white_is_best):
-            ##    print('Challenger Wins with White.')#  Winning rate ',winning_rate)
-            ##elif(ng_win==0 and white_is_best):
-            ##    print('Challenger Loses with Black.')#  Winning rate ',winning_rate)
-            ##elif(ng_win==0 and not white_is_best):
-            ##    print('Challenger Loses with White.')#  Winning rate ',winning_rate)
             
             # Save a "Win" File in Dropbox if win, and "Lose" File if lose
-            if(ng_win==1):
-                filename = 'win'+str(random.random()*200000//2)
-            else:
-                filename = 'lose'+str(random.random()*200000//2)
+            if(ng_win==1): filename = 'win'+str(random.random()*200000//2)
+            else: filename = 'lose'+str(random.random()*200000//2)
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/EvaluateWinCount/'+filename, dropbox.files.WriteMode.add, mute=True)
 
             w = 0
@@ -369,11 +358,7 @@ class EvolverWorker:
             if w >= self.config.eval.game_num * self.config.eval.replace_rate:
                 print("Win count reach", w," so change best model\n")
                 break
-            
-        # Remove all Win Lose Records and start new again
-        for entry in self.dbx.files_list_folder('/EvaluateWinCount').entries:
-            self.dbx.files_delete('/EvaluateWinCount/'+entry.name)
-            
+       
         #winning_rate = sum(results) / len(results)
         return w / (w+l) >= self.config.eval.replace_rate
 
