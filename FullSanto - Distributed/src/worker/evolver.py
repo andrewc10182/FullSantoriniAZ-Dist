@@ -354,13 +354,16 @@ class EvolverWorker:
             
             if l >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
                 print("Lose count reach", l," so give up challenge\n")
+                return False
                 break
+                
             if w >= self.config.eval.game_num * self.config.eval.replace_rate:
                 print("Win count reach", w," so change best model\n")
+                return True
                 break
        
         #winning_rate = sum(results) / len(results)
-        return w / (w+l) >= self.config.eval.replace_rate
+        #return w / (w+l) >= self.config.eval.replace_rate
 
     def play_game(self, best_model, ng_model):
         env = GameEnv().reset()
