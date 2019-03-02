@@ -43,18 +43,20 @@ class AssistantWorker:
         self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
         print('\nThe Strongest Version found is: ',self.version,'\n')
         
-        # Load either the latest ng model or the best model as self model
-        self.model = self.load_model()
-        self.compile_model()
+        
             
         while True:
             if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
                 time.sleep(300)  
-            
+                
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
                 time.sleep(300)  
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
                 # Evaluating                
+                # Load either the latest ng model or the best model as self model
+                self.model = self.load_model()
+                self.compile_model()
+                
                 print('\nLoading Best Model:')
                 self.best_model = self.load_best_model()
                 RetrainSuccessful = self.evaluate()
