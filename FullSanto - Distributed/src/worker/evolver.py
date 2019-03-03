@@ -408,8 +408,10 @@ class EvolverWorker:
         os.remove(config_path)
         os.remove(weight_path)
         os.rmdir(model_dir)
-        for entry in self.dbx.files_list_folder('/model/next_generation').entries:
-            self.dbx.files_delete('/model/next_generation'+entry.name)
+        try:
+            for entry in self.dbx.files_list_folder('/model/next_generation').entries:
+                self.dbx.files_delete('/model/next_generation'+entry.name)
+        except: dummy = 0
 
     def self_play_game(self, idx):
         self.env.reset()
