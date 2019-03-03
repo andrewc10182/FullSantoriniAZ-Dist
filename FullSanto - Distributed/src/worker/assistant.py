@@ -54,6 +54,9 @@ class AssistantWorker:
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
                 # Evaluating                
                 # Load either the latest ng model or the best model as self model
+                try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
+                except: a=0
+            
                 self.model = self.load_model()
                 self.compile_model()
                 
