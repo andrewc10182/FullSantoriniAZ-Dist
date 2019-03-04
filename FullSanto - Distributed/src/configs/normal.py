@@ -24,7 +24,7 @@ class PlayConfig:
         self.c_puct = 1.5 #2
         self.noise_eps = 0.25
         self.dirichlet_alpha = 0.03
-        self.change_tau_turn = 4
+        self.change_tau_turn = 0
         self.virtual_loss = 3
         self.prediction_queue_size = 16
         self.parallel_search_num = 8 #2
@@ -33,7 +33,7 @@ class PlayConfig:
 
 class TrainerConfig:
     def __init__(self):
-        self.batch_size = 512
+        self.batch_size = 1024
         self.epoch_to_checkpoint = 2 #2
         self.start_total_steps = 0
         self.save_model_steps = 9999 # 150
