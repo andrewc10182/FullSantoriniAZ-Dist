@@ -50,9 +50,6 @@ class AssistantWorker:
                 self.model = self.load_model()
                 self.compile_model()
                 
-                print('\nLoading Best Model:')
-                self.best_model = self.load_best_model()
-                
                 target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                              self.generations_to_keep * self.play_files_per_generation)
                 self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
