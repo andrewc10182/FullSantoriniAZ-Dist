@@ -47,8 +47,14 @@ class AssistantWorker:
             
         while True:
             if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
-                time.sleep(300)  
-                
+                target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+                             self.generations_to_keep * self.play_files_per_generation)
+                self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+
+                print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
+
+                self.self_play()
+
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
                 time.sleep(300)  
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
@@ -374,12 +380,17 @@ class AssistantWorker:
         write_game_data_to_file(path, self.buffer)
         
         # Saving File to Drop Box
+        target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+             self.generations_to_keep * self.play_files_per_generation)
         self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-        #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation 
-        #if self.play_files_on_dropbox < self.min_play_files_to_learn:            
-        with open(path, 'rb') as f:
-            data = f.read()
-        res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
+        
+        if(self.play_files_on_dropbox < target-1):
+            print('Contributing self-play games to Dropbox...')
+            with open(path, 'rb') as f:
+                data = f.read()
+            res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
+        else:
+            print('Sufficient games are in Dropbox.  Self Play games not saved.  Waiting for Training...')
         self.buffer = []
 
     def remove_play_data(self):
