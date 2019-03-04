@@ -42,9 +42,7 @@ class AssistantWorker:
         self.dbx = dropbox.Dropbox(auth_token)  
         self.version = len(self.dbx.files_list_folder('/model/HistoryVersion').entries)
         print('\nThe Strongest Version found is: ',self.version,'\n')
-        
-        
-            
+
         while True:
             if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
                 self.model = self.load_model()
@@ -59,7 +57,7 @@ class AssistantWorker:
                 self.self_play()
 
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
-                time.sleep(300)  
+                time.sleep(60)  
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
                 # Evaluating                
                 # Load either the latest ng model or the best model as self model
@@ -72,7 +70,7 @@ class AssistantWorker:
                 print('\nLoading Best Model:')
                 self.best_model = self.load_best_model()
                 RetrainSuccessful = self.evaluate()
-                time.sleep(300)
+                time.sleep(60)
 
                 self.dataset = None
                 
