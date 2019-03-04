@@ -32,8 +32,8 @@ class EvolverWorker:
         self.version = 0 # Change to dynamic lookup from Drop Box Files
         self.env = GameEnv()
         self.best_is_white = True
-        self.play_files_per_generation = 15 # each file this number of games
-        self.nb_plays_per_file = 10
+        self.play_files_per_generation = 10 # each file this number of games
+        self.nb_plays_per_file = 15
         self.generations_to_keep = 20
         #self.min_play_files_to_learn = 0
         self.play_files_on_dropbox = 0
