@@ -392,6 +392,7 @@ class AssistantWorker:
             res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
         else:
             print('Sufficient games are in Dropbox.  Self Play games not saved.  Waiting for Training...')
+            time.sleep(60)
         self.buffer = []
 
     def remove_play_data(self):
