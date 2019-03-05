@@ -385,7 +385,7 @@ class AssistantWorker:
              self.generations_to_keep * self.play_files_per_generation)
         self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
         
-        if(self.play_files_on_dropbox < target-1):
+        if(self.play_files_on_dropbox < target):
             print('Contributing self-play games to Dropbox...')
             with open(path, 'rb') as f:
                 data = f.read()
