@@ -33,7 +33,7 @@ class EvolverWorker:
         self.env = GameEnv()
         self.best_is_white = True
         self.play_files_per_generation = 8 # each file this number of games
-        self.nb_plays_per_file = 250
+        self.nb_plays_per_file = 100
         self.generations_to_keep = 20
         #self.min_play_files_to_learn = 0
         self.play_files_on_dropbox = 0
@@ -49,22 +49,13 @@ class EvolverWorker:
             
         while True:
             if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
-                
                 self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-
                 target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                              self.generations_to_keep * self.play_files_per_generation)
                 print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
 
-                #while self.play_files_on_dropbox < self.min_play_files_to_learn:
-                #    print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Started Self-Playing...\n')
                 while self.play_files_on_dropbox < target:
                     self.self_play()
-                    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-                    print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
-                #    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-                #print('\nPlay Files Found:',self.play_files_on_dropbox,'of required',self.min_play_files_to_learn,'files. Training files sufficient for Learning!\n')
-                  
                 self.dbx.files_delete('/state/selfplaying')
                 res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)   
             
@@ -129,6 +120,13 @@ class EvolverWorker:
             end_time = time.time()
             print("Game",idx," Time=",(end_time - start_time)," sec, Turn=", env.turn, env.observation, env.winner)
             idx += 1
+            
+            self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+            target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+                     self.generations_to_keep * self.play_files_per_generation)
+            if(self.play_files_on_dropbox >= target):
+                print('\nSufficient Play Data available, moving on to training...')
+                break
 
     def load_model(self):    
         # If there's an existing next generation model, use it
