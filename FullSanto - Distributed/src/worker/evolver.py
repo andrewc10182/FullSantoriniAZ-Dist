@@ -313,8 +313,7 @@ class EvolverWorker:
             res = self.dbx.files_upload(data, '/model/HistoryVersion/Version'+"{0:0>4}".format(self.version) + '.h5', dropbox.files.WriteMode.add, mute=True)
             res = self.dbx.files_upload(data, '/model/model_best_weight.h5', dropbox.files.WriteMode.overwrite, mute=True)
             
-            # Added to remove the next generation file
-            self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
+            
         else:
             print('Challenger unable to beat the best model...')
         return ng_is_great
@@ -410,7 +409,7 @@ class EvolverWorker:
         os.rmdir(model_dir)
         try:
             for entry in self.dbx.files_list_folder('/model/next_generation').entries:
-                self.dbx.files_delete('/model/next_generation'+entry.name)
+                self.dbx.files_delete('/model/next_generation/'+entry.name)
         except: dummy = 0
 
     def self_play_game(self, idx):
