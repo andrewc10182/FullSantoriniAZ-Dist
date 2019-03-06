@@ -89,6 +89,14 @@ class AssistantWorker:
             end_time = time.time()
             print("Game",idx," Time=",(end_time - start_time)," sec, Turn=", env.turn, env.observation, env.winner)
             idx += 1
+            
+            self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+            target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+                     self.generations_to_keep * self.play_files_per_generation)
+            if(self.play_files_on_dropbox >= target):
+                print('\nSufficient Play Data available, main Evolver is training...')
+                time.sleep(60)
+                break
 
     def load_model(self):            
          # If there's an existing next generation model, use it
