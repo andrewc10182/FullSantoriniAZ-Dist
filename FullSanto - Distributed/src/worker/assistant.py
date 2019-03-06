@@ -45,6 +45,10 @@ class AssistantWorker:
 
         while True:
             if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
+                # Try to empty the next generation folder before downloading
+                try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
+                except: dummy = 0
+                
                 self.model = self.load_model()
                 self.compile_model()
                 
@@ -149,10 +153,9 @@ class AssistantWorker:
     def training(self):
         last_load_data_step = last_save_step = total_steps = self.config.trainer.start_total_steps
         
-        try:
-            self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
-        except:
-            a=0
+        try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
+        except: dummy=0
+            
         steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
         total_steps += steps
         self.save_current_model()
