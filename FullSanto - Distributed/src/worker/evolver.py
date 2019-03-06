@@ -34,8 +34,7 @@ class EvolverWorker:
         self.best_is_white = True
         self.play_files_per_generation = 8 # each file this number of games
         self.nb_plays_per_file = 100
-        self.generations_to_keep = 20
-        #self.min_play_files_to_learn = 0
+        self.generations_to_keep = 10
         self.play_files_on_dropbox = 0
     def start(self):
         auth_token = 'UlBTypwXWYAAAAAAAAAAEP6hKysZi9cQKGZTmMu128TYEEig00w3b3mJ--b_6phN'
