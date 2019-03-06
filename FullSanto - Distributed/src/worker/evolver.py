@@ -55,6 +55,7 @@ class EvolverWorker:
                 print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
 
                 while self.play_files_on_dropbox < target:
+                    self.load_play_data() # Utilize the time when others are self-play, start loading play data
                     self.self_play()
                 self.dbx.files_delete('/state/selfplaying')
                 res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)   
