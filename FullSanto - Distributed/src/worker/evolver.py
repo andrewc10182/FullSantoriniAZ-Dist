@@ -54,7 +54,6 @@ class EvolverWorker:
                 print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
 
                 while self.play_files_on_dropbox < target:
-                    self.load_play_data() # Utilize the time when others are self-play, start loading play data
                     self.self_play()
                 self.dbx.files_delete('/state/selfplaying')
                 res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)   
@@ -110,11 +109,8 @@ class EvolverWorker:
         idx = 1
 
         for _ in range(self.nb_plays_per_file):
-            #self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation 
-            #if(self.play_files_on_dropbox >= self.min_play_files_to_learn):
-            #    print('Training files sufficient for Learning, ending Self-Play...')
-            #    break
+            self.load_play_data() # Utilize the time when others are self-play, start loading new play data
+            
             start_time = time.time()            
             env = self.self_play_game(idx)
             end_time = time.time()
