@@ -310,7 +310,16 @@ class EvolverWorker:
             res = self.dbx.files_upload(data, '/model/HistoryVersion/Version'+"{0:0>4}".format(self.version) + '.h5', dropbox.files.WriteMode.add, mute=True)
             res = self.dbx.files_upload(data, '/model/model_best_weight.h5', dropbox.files.WriteMode.overwrite, mute=True)
             
-            
+            # Remove All Self-Play and start from Stratch
+            for entry in self.dbx.files_list_folder('/play_data').entries:
+                self.dbx.files_delete('/play_data/'+entry.name)
+            # Also reset the target filename
+            target = int(self.dbx.files_list_folder('/target').entries[0].name)
+            self.dbx.files_delete('/target/'+str(target))
+            target = self.play_files_per_generation
+            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)            
+   
+
         else:
             print('Challenger unable to beat the best model...')
         return ng_is_great
