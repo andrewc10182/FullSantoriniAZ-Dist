@@ -345,7 +345,7 @@ class EvolverWorker:
                 if(white_is_best): filename = 'wb'+str(random.random()*2000000//2)
                 else: filename = 'ww'+str(random.random()*2000000//2)
             else: 
-                if(whiteisbest): filename = 'lb'+str(random.random()*2000000//2)
+                if(white_is_best): filename = 'lb'+str(random.random()*2000000//2)
                 else: filename = 'lw'+str(random.random()*2000000//2)
                 
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/EvaluateWinCount/'+filename, dropbox.files.WriteMode.add, mute=True)
