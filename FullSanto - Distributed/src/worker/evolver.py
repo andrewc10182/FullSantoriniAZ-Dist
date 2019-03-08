@@ -343,17 +343,28 @@ class EvolverWorker:
             ng_win, white_is_best = self.play_game(self.best_model, ng_model)
             
             # Save a "Win" File in Dropbox if win, and "Lose" File if lose
-            if(ng_win==1): filename = 'win'+str(random.random()*200000//2)
-            else: filename = 'lose'+str(random.random()*200000//2)
+            if(ng_win==1): 
+                if(white_is_best): filename = 'wb'+str(random.random()*2000000//2)
+                else: filename = 'ww'+str(random.random()*2000000//2)
+            else: 
+                if(whiteisbest): filename = 'lb'+str(random.random()*2000000//2)
+                else: filename = 'lw'+str(random.random()*2000000//2)
+                
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/EvaluateWinCount/'+filename, dropbox.files.WriteMode.add, mute=True)
-
-            w = 0
-            l = 0
+            
+            ww = 0
+            wb = 0
+            lw = 0
+            lb = 0
+            
             for entry in self.dbx.files_list_folder('//EvaluateWinCount').entries:
-                if(entry.name[0] == 'w'): w +=1
-                else: l += 1
-                #print(entry.name)
-            print('Cloud Records of Wins:',w,'Lose:',l,'Total:',w+l,'Current Rate:',w/(w+l))
+                if(entry.name[:2] == 'ww'): ww +=1
+                elif(entry.name[:2] == 'wb'): wb += 1
+                elif(entry.name[:2] == 'lw'): lw += 1
+                elif(entry.name[:2] == 'lb'): lb += 1
+            temp = 'In '+str(ww+wb+lw+lb)+' Cloud Games, NG Wins '+str(ww)+' of '+str(ww+lw)+' (%.3f)%% games in White, ' + str(wb)+' of '+str(wb+lb)+' (%.3f)%% games in Black, '+ str(ww+wb)+' of '+str(ww+wb+lw+lb)+' (%.3f)%% games in Total.'
+            temp2 = (ww/(ww+lw)*100, wb/(wb+lb)*100, (ww+wb)/(ww+wb+lw+lb)*100)
+            print(temp % temp2)
             
             if l >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
                 print("Lose count reach", l," so give up challenge\n")
@@ -370,12 +381,6 @@ class EvolverWorker:
 
     def play_game(self, best_model, ng_model):
         env = GameEnv().reset()
-
-        #if(self.raw_timestamp!=self.dbx.files_get_metadata('/model/model_best_weight.h5').client_modified):
-        #    print('A newer model version is available - giving up this match')
-        #    ng_win = 0
-        #    self.best_is_white= True
-        #    return ng_win, self.best_is_white
     
         best_player = GamePlayer(self.config, best_model, play_config=self.config.eval.play_config)
         ng_player = GamePlayer(self.config, ng_model, play_config=self.config.eval.play_config)
