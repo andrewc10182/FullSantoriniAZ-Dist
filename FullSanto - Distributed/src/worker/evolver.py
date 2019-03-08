@@ -316,10 +316,8 @@ class EvolverWorker:
             # Also reset the target filename
             target = int(self.dbx.files_list_folder('/target').entries[0].name)
             self.dbx.files_delete('/target/'+str(target))
-            target = self.play_files_per_generation
-            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)            
+            res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(self.play_files_per_generation), dropbox.files.WriteMode.add, mute=True)            
    
-
         else:
             print('Challenger unable to beat the best model...')
         return ng_is_great
