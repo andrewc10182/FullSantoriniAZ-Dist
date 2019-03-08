@@ -366,13 +366,13 @@ class EvolverWorker:
                 print(temp % temp2)
             except: pass
             
-            if l >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
-                print("Lose count reach", l," so give up challenge\n")
+            if lb+lw >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
+                print("Lose count reach", lb+lw," so give up challenge\n")
                 return False
                 break
                 
-            if w >= self.config.eval.game_num * self.config.eval.replace_rate:
-                print("Win count reach", w," so change best model\n")
+            if wb+ww >= self.config.eval.game_num * self.config.eval.replace_rate:
+                print("Win count reach", wb+ww," so change best model\n")
                 return True
                 break
        
