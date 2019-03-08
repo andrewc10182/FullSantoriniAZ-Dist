@@ -355,14 +355,16 @@ class EvolverWorker:
             lw = 0
             lb = 0
             
-            for entry in self.dbx.files_list_folder('//EvaluateWinCount').entries:
-                if(entry.name[:2] == 'ww'): ww +=1
-                elif(entry.name[:2] == 'wb'): wb += 1
-                elif(entry.name[:2] == 'lw'): lw += 1
-                elif(entry.name[:2] == 'lb'): lb += 1
-            temp = 'In '+str(ww+wb+lw+lb)+' Cloud Games, NG Wins '+str(ww)+' of '+str(ww+lw)+' (%.3f)%% games in White, ' + str(wb)+' of '+str(wb+lb)+' (%.3f)%% games in Black, '+ str(ww+wb)+' of '+str(ww+wb+lw+lb)+' (%.3f)%% games in Total.'
-            temp2 = (ww/(ww+lw)*100, wb/(wb+lb)*100, (ww+wb)/(ww+wb+lw+lb)*100)
-            print(temp % temp2)
+            try:
+                for entry in self.dbx.files_list_folder('//EvaluateWinCount').entries:
+                    if(entry.name[:2] == 'ww'): ww +=1
+                    elif(entry.name[:2] == 'wb'): wb += 1
+                    elif(entry.name[:2] == 'lw'): lw += 1
+                    elif(entry.name[:2] == 'lb'): lb += 1
+                temp = 'In '+str(ww+wb+lw+lb)+' Cloud Games, NG Wins '+str(ww)+' of '+str(ww+lw)+' (%.3f)%% games in White, ' + str(wb)+' of '+str(wb+lb)+' (%.3f)%% games in Black, '+ str(ww+wb)+' of '+str(ww+wb+lw+lb)+' (%.3f)%% games in Total.'
+                temp2 = (ww/(ww+lw)*100, wb/(wb+lb)*100, (ww+wb)/(ww+wb+lw+lb)*100)
+                print(temp % temp2)
+            except: pass
             
             if l >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
                 print("Lose count reach", l," so give up challenge\n")
