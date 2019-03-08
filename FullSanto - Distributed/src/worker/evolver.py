@@ -314,8 +314,8 @@ class EvolverWorker:
             for entry in self.dbx.files_list_folder('/play_data').entries:
                 self.dbx.files_delete('/play_data/'+entry.name)
             # Also reset the target filename
-            target = int(self.dbx.files_list_folder('/target').entries[0].name)
-            self.dbx.files_delete('/target/'+str(target))
+            for entry in self.dbx.files_list_folder('/target').entries:
+                self.dbx.files_delete('/target/'+entry.name)
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(self.play_files_per_generation), dropbox.files.WriteMode.add, mute=True)            
    
         else:
