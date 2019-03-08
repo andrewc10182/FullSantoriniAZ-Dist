@@ -316,6 +316,7 @@ class EvolverWorker:
             # Also reset the target filename
             for entry in self.dbx.files_list_folder('/target').entries:
                 self.dbx.files_delete('/target/'+entry.name)
+            print('The play files per generation number is',self.play_files_per_generation)
             res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(self.play_files_per_generation), dropbox.files.WriteMode.add, mute=True)            
    
         else:
