@@ -429,18 +429,27 @@ class EvolverWorker:
         self.black = GamePlayer(self.config, self.model)
         self.white = GamePlayer(self.config, self.model)
         
-        ### Try to get games with black win only !!!
-        while self.env.winner != Winner.black:
-            while not self.env.done :
-                if self.env.player_turn() == Player.black:
-                    action = self.black.action(self.env.board)
-                else:
-                    action = self.white.action(self.env.board)
-                self.env.step(action)
-            self.finish_game()
-            #self.save_play_data(write=idx % self.nb_plays_per_file == 0)
-            self.remove_play_data()
+        while not self.env.done :
+            if self.env.player_turn() == Player.black:
+                action = self.black.action(self.env.board)
+            else:
+                action = self.white.action(self.env.board)
+            self.env.step(action)
+            
+            # Do again if White won
+            if self.env.winner == Winner.black:
+                print('Black won, proceeding')
+                continue
+            elif self.env.winner = Winner.white:
+                print('White won, Repeat')
+                self.finish_game()
+                self.remove_play_data()
+                self.env.reset()
+                
+        
+        self.finish_game()
         self.save_play_data(write=idx % self.nb_plays_per_file == 0)
+        self.remove_play_data()
         return self.env
 
     def finish_game(self):
