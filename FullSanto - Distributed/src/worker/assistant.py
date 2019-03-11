@@ -367,13 +367,11 @@ class AssistantWorker:
             
             # Do again if White won
             if self.env.winner == Winner.black:
-                print('Black won, proceeding')
                 continue
             elif self.env.winner == Winner.white:
-                print('White won, Repeat')
-                self.finish_game()
-                self.remove_play_data()
                 self.env.reset()
+                self.black.moves = []
+                self.white.moves = []
                 
         self.finish_game()
         self.save_play_data(write=idx % self.nb_plays_per_file == 0)
