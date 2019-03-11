@@ -441,6 +441,8 @@ class EvolverWorker:
                 continue
             elif self.env.winner == Winner.white:
                 self.env.reset()
+                self.black.moves = []
+                self.white.moves = []
     
         self.finish_game()
         self.save_play_data(write=idx % self.nb_plays_per_file == 0)
