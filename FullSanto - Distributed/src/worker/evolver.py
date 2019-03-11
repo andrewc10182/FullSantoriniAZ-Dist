@@ -33,7 +33,7 @@ class EvolverWorker:
         self.env = GameEnv()
         self.best_is_white = True
         self.play_files_per_generation = 8 # each file this number of games
-        self.nb_plays_per_file = 25 #100
+        self.nb_plays_per_file = 2 #100
         self.generations_to_keep = 10
         self.play_files_on_dropbox = 0
     def start(self):
@@ -438,12 +438,8 @@ class EvolverWorker:
             
             # Do again if White won
             if self.env.winner == Winner.black:
-                print('Black won, proceeding')
                 continue
             elif self.env.winner == Winner.white:
-                print('White won, Repeat')
-                self.finish_game()
-                self.remove_play_data()
                 self.env.reset()
     
         self.finish_game()
