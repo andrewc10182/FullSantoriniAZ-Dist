@@ -33,7 +33,7 @@ class EvolverWorker:
         self.env = GameEnv()
         self.best_is_white = True
         self.play_files_per_generation = 8 # each file this number of games
-        self.nb_plays_per_file = 25 #100
+        self.nb_plays_per_file = 100
         self.generations_to_keep = 10
         self.play_files_on_dropbox = 0
     def start(self):
@@ -437,12 +437,12 @@ class EvolverWorker:
             self.env.step(action)
             
             # Do again if White won
-            if self.env.winner == Winner.black:
-                continue
-            elif self.env.winner == Winner.white:
-                self.env.reset()
-                self.black.moves = []
-                self.white.moves = []
+            #if self.env.winner == Winner.black:
+            #    continue
+            #elif self.env.winner == Winner.white:
+            #    self.env.reset()
+            #    self.black.moves = []
+            #    self.white.moves = []
     
         self.finish_game()
         self.save_play_data(write=idx % self.nb_plays_per_file == 0)
@@ -488,21 +488,6 @@ class EvolverWorker:
             return
         for i in range(len(files) - self.play_files_per_generation*self.generations_to_keep):
             os.remove(files[i])
-            
-        # Also remove the oldest 15 files from dropbox
-        #    localfilenames = []
-        #        for a in range(len(files)):
-        #            localfilenames.append(files[a][-32:])
-        #        dbfiles = []
-        #        for entry in self.dbx.files_list_folder('/play_data').entries:
-        #            dbfiles.append(entry.name)
-        #        localfiles_to_remove = set(localfilenames) - set(dbfiles)
-        #        print('Removing',len(localfiles_to_remove),'files from local drive')
-        #        for file in localfiles_to_remove:
-        #            print('Removing local play_data file',file)
-        #            path = os.path.join(self.config.resource.play_data_dir,file)
-        #            os.remove(path)
-        #        break
             
     def remove_all_play_data(self):
         files = get_game_data_filenames(self.config.resource)
