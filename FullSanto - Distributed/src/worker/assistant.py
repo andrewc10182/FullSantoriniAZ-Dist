@@ -33,7 +33,7 @@ class AssistantWorker:
         self.env = GameEnv()
         self.best_is_white = True
         self.play_files_per_generation = 8 # each file this number of games
-        self.nb_plays_per_file = 25 #100
+        self.nb_plays_per_file = 100
         self.generations_to_keep = 10
         #self.min_play_files_to_learn = 0
         self.play_files_on_dropbox = 0
@@ -366,12 +366,12 @@ class AssistantWorker:
             self.env.step(action)
             
             # Do again if White won
-            if self.env.winner == Winner.black:
-                continue
-            elif self.env.winner == Winner.white:
-                self.env.reset()
-                self.black.moves = []
-                self.white.moves = []
+            #if self.env.winner == Winner.black:
+            #    continue
+            #elif self.env.winner == Winner.white:
+            #    self.env.reset()
+            #    self.black.moves = []
+            #    self.white.moves = []
                 
         self.finish_game()
         self.save_play_data(write=idx % self.nb_plays_per_file == 0)
