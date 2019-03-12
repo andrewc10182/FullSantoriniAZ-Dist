@@ -32,7 +32,7 @@ class EvolverWorker:
         self.version = 0 # Change to dynamic lookup from Drop Box Files
         self.env = GameEnv()
         self.best_is_white = True
-        self.play_files_per_generation = 8 # each file this number of games
+        self.play_files_per_generation = 7 # each file this number of games
         self.nb_plays_per_file = 100
         self.generations_to_keep = 10
         self.play_files_on_dropbox = 0
@@ -321,6 +321,9 @@ class EvolverWorker:
    
         else:
             print('Challenger unable to beat the best model...')
+            
+            # Try to remove challenger and use best model to augment more data
+            self.remove_model(model_dir) # Remove all Next Generation
         return ng_is_great
 
     def load_next_generation_model(self):
