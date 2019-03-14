@@ -36,6 +36,7 @@ class EvolverWorker:
         self.nb_plays_per_file = 100
         self.generations_to_keep = 10
         self.play_files_on_dropbox = 0
+        self.evaulate_retries = 2
     def start(self):
         auth_token = 'UlBTypwXWYAAAAAAAAAAEP6hKysZi9cQKGZTmMu128TYEEig00w3b3mJ--b_6phN'
         self.dbx = dropbox.Dropbox(auth_token)  
@@ -100,16 +101,25 @@ class EvolverWorker:
                 res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)            
 
                 try: self.dbx.files_delete('/state/evaluating')
-                except: dummy=0  
-                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
-                self.dataset = None
-                
+                    except: pass
+                if(RetainingSuccessful or self.evaulate_retries < 0):
+                    res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
+                    self.dataset = None
+                    
+                    self.evaulate_retries = 2
+                else:
+                    res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
+                    self.dataset = None
+                    
+                    self.evaulate_retries -= 1
+                    print('Lets retry with more epoch.  Retries left is',self.evaluate_retries)
+                    
     def self_play(self):
         self.buffer = []
         idx = 1
 
         for _ in range(self.nb_plays_per_file):
-            if(idx % 10 == 0):
+            if((idx+1) % 10 == 0):
                 self.load_play_data() # Utilize the time when others are self-play, start loading new play data
             
             start_time = time.time()            
@@ -178,7 +188,8 @@ class EvolverWorker:
         except: dummy = 0
         last_load_data_step = last_save_step = total_steps = self.config.trainer.start_total_steps
             
-        steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
+        additional_epoch = (2 - self.evaulate_retries) * 2
+        steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint + additional_epoch)
         total_steps += steps
         self.save_current_model()
         
