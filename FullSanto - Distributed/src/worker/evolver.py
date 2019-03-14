@@ -92,21 +92,22 @@ class EvolverWorker:
                         path = os.path.join(self.config.resource.play_data_dir,list[i].name)
                         os.remove(path)
 
-                # Update Dropbox's Target Counter to next number
-                target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
-                             self.generations_to_keep * self.play_files_per_generation)
-                self.dbx.files_delete('/target/'+str(target))
-                target = min(target + self.play_files_per_generation,
-                             self.generations_to_keep * self.play_files_per_generation)
-                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)            
-
                 try: self.dbx.files_delete('/state/evaluating')
-                    except: pass
+                except: pass
+                
                 if(RetainingSuccessful or self.evaulate_retries < 0):
                     res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
                     self.dataset = None
                     
                     self.evaulate_retries = 2
+                    
+                     # Update Dropbox's Target Counter to next number
+                    target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+                                 self.generations_to_keep * self.play_files_per_generation)
+                    self.dbx.files_delete('/target/'+str(target))
+                    target = min(target + self.play_files_per_generation,
+                                 self.generations_to_keep * self.play_files_per_generation)
+                    res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)  
                 else:
                     res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
                     self.dataset = None
