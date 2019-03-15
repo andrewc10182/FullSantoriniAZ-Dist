@@ -190,11 +190,10 @@ class EvolverWorker:
         last_load_data_step = last_save_step = total_steps = self.config.trainer.start_total_steps
         
         if(self.evaluate_retries == 2):
-            additional_epoch = 0
+            steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
         elif(self.evaluate_retries == 1 or self.evaluate_retries == 0):
-            additional_epoch = -1
-        steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint + additional_epoch)
-        
+            steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation
+
         total_steps += steps
         self.save_current_model()
         
