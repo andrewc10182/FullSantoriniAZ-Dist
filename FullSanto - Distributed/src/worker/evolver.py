@@ -189,7 +189,7 @@ class EvolverWorker:
         except: dummy = 0
         last_load_data_step = last_save_step = total_steps = self.config.trainer.start_total_steps
             
-        additional_epoch = (2 - self.evaluate_retries) * 2
+        additional_epoch = 2 - self.evaluate_retries
         steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint + additional_epoch)
         total_steps += steps
         self.save_current_model()
