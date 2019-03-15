@@ -192,7 +192,7 @@ class EvolverWorker:
         if(self.evaluate_retries == 2):
             additional_epoch = 0
         elif(self.evaluate_retries == 1 or self.evaluate_retries == 0):
-            additional_epoch = 1
+            additional_epoch = -1
         steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint + additional_epoch)
         
         total_steps += steps
