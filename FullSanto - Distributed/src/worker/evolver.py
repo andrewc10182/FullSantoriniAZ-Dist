@@ -188,9 +188,13 @@ class EvolverWorker:
         try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
         except: dummy = 0
         last_load_data_step = last_save_step = total_steps = self.config.trainer.start_total_steps
-            
-        additional_epoch = 2 - self.evaluate_retries
+        
+        if(self.evaluate_retries == 2):
+            additional_epoch = 0
+        elif(self.evaluate_retries == 1 or self.evaluate_retries == 0):
+            additional_epoch = 1
         steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint + additional_epoch)
+        
         total_steps += steps
         self.save_current_model()
         
