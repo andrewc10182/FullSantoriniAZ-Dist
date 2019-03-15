@@ -109,6 +109,9 @@ class EvolverWorker:
                                  self.generations_to_keep * self.play_files_per_generation)
                     res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)  
                 else:
+                    try: self.dbx.files_delete('/state/evaluating')
+                    except: pass
+                
                     res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
                     self.dataset = None
                     
