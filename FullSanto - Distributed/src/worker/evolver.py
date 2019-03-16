@@ -194,12 +194,12 @@ class EvolverWorker:
         elif(self.evaluate_retries == 1 or self.evaluate_retries == 0):
             steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation
 
-        total_steps += steps
+        #total_steps += steps
         self.save_current_model()
         
         if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
             self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)   
-        last_save_step = total_steps
+        #last_save_step = total_steps
 
     def load_play_data(self):
         for entry in self.dbx.files_list_folder('/play_data').entries:
