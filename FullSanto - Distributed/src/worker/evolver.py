@@ -388,15 +388,15 @@ class EvolverWorker:
             # Adding Early Stoppers
             if ww+wb+lw+lb > 100 and wb/(wb+lb) < 0.4:
                 print("Less than 40% in 100 games, so giving up challenge\n")
-                return false
+                return False
                 break
             if ww+wb+lw+lb > 200 and wb/(wb+lb) < 0.45:
                 print("Less than 45% in 200 games, so giving up challenge\n")
-                return false
+                return False
                 break
             if ww+wb+lw+lb > 300 and wb/(wb+lb) < 0.5:
                 print("Less than 50% in 300 games, so giving up challenge\n")
-                return false
+                return False
                 break
                 
             if lb+lw >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
