@@ -95,7 +95,7 @@ class EvolverWorker:
                 try: self.dbx.files_delete('/state/evaluating')
                 except: pass
                 
-                if(RetrainSuccessful or self.evaluate_retries < 0):
+                if(RetrainSuccessful or self.evaluate_retries <= 0):
                     res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
                     self.dataset = None
                     
