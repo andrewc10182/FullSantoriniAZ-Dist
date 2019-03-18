@@ -290,7 +290,9 @@ class AssistantWorker:
             # see if this will break out of evaluating
             if(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
                 break
-            
+            elif(self.dbx.files_list_folder('/state').entries[0].name == 'selftraining'):
+                break
+                
             ng_win, white_is_best = self.play_game(self.best_model, ng_model)
             
             # Save a "Win" File in Dropbox if win, and "Lose" File if lose
