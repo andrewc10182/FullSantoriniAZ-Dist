@@ -386,11 +386,15 @@ class EvolverWorker:
             except: pass
             
             # Adding Early Stoppers
-            if ww+wb+lw+lb > 100 and (ww+wb)/(ww+wb+lw+lb) < 0.4:
+            if ww+wb+lw+lb > 50 and (ww+wb)/(ww+wb+lw+lb) < 0.38:
                 print("Less than 40% in 100 games, so giving up challenge\n")
                 return False
                 break
-            if ww+wb+lw+lb > 200 and (ww+wb)/(ww+wb+lw+lb) < 0.45:
+            if ww+wb+lw+lb > 100 and (ww+wb)/(ww+wb+lw+lb) < 0.42:
+                print("Less than 40% in 100 games, so giving up challenge\n")
+                return False
+                break
+            if ww+wb+lw+lb > 200 and (ww+wb)/(ww+wb+lw+lb) < 0.46:
                 print("Less than 45% in 200 games, so giving up challenge\n")
                 return False
                 break
