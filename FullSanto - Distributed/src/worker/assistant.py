@@ -32,8 +32,8 @@ class AssistantWorker:
         self.version = 0 # Change to dynamic lookup from Drop Box Files
         self.env = GameEnv()
         self.best_is_white = True
-        self.play_files_per_generation = 7 # each file this number of games
-        self.nb_plays_per_file = 100
+        self.play_files_per_generation = 28 # each file this number of games
+        self.nb_plays_per_file = 25
         self.generations_to_keep = 10
         #self.min_play_files_to_learn = 0
         self.play_files_on_dropbox = 0
