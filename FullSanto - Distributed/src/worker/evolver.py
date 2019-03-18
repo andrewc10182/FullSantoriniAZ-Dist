@@ -99,7 +99,7 @@ class EvolverWorker:
                     res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
                     self.dataset = None
                     
-                    self.evaluate_retries = 3
+                    self.evaluate_retries = 2
                     
                      # Update Dropbox's Target Counter to next number
                     target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
@@ -189,10 +189,10 @@ class EvolverWorker:
         except: dummy = 0
         last_load_data_step = last_save_step = total_steps = self.config.trainer.start_total_steps
         
-        #if(self.evaluate_retries == 2):
-        #    steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
-        #elif(self.evaluate_retries == 1 or self.evaluate_retries == 0):
-        steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation
+        if(self.evaluate_retries == 2):
+            steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
+        elif(self.evaluate_retries == 1 or self.evaluate_retries == 0):
+            steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation
 
         #total_steps += steps
         self.save_current_model()
