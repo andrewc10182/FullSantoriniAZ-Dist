@@ -36,7 +36,7 @@ class EvolverWorker:
         self.nb_plays_per_file = 25
         self.generations_to_keep = 10
         self.play_files_on_dropbox = 0
-        self.evaluate_retries = 2
+        self.evaluate_retries = 999
     def start(self):
         auth_token = 'UlBTypwXWYAAAAAAAAAAEP6hKysZi9cQKGZTmMu128TYEEig00w3b3mJ--b_6phN'
         self.dbx = dropbox.Dropbox(auth_token)  
@@ -191,15 +191,13 @@ class EvolverWorker:
         
         if(self.evaluate_retries == 2):
             steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
-        elif(self.evaluate_retries == 1 or self.evaluate_retries == 0):
+        else:
             steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation
 
-        #total_steps += steps
         self.save_current_model()
         
         if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
-            self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)   
-        #last_save_step = total_steps
+            self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)
 
     def load_play_data(self):
         for entry in self.dbx.files_list_folder('/play_data').entries:
