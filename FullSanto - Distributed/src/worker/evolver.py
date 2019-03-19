@@ -387,33 +387,24 @@ class EvolverWorker:
             
             # Adding Early Stoppers
             if ww+wb+lw+lb > 50 and (ww+wb)/(ww+wb+lw+lb) < 0.38:
-                print("Less than 40% in 100 games, so giving up challenge\n")
+                print("Less than 38% in 50 games, so giving up challenge\n")
                 return False
-                break
             if ww+wb+lw+lb > 100 and (ww+wb)/(ww+wb+lw+lb) < 0.42:
-                print("Less than 40% in 100 games, so giving up challenge\n")
+                print("Less than 42% in 100 games, so giving up challenge\n")
                 return False
-                break
             if ww+wb+lw+lb > 200 and (ww+wb)/(ww+wb+lw+lb) < 0.46:
-                print("Less than 45% in 200 games, so giving up challenge\n")
+                print("Less than 46% in 200 games, so giving up challenge\n")
                 return False
-                break
             if ww+wb+lw+lb > 300 and (ww+wb)/(ww+wb+lw+lb) < 0.5:
                 print("Less than 50% in 300 games, so giving up challenge\n")
                 return False
-                break
-                
             if lb+lw >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
                 print("Lose count reach", lb+lw," so give up challenge\n")
                 return False
-                break
+            
             if wb+ww >= self.config.eval.game_num * self.config.eval.replace_rate:
                 print("Win count reach", wb+ww," so change best model\n")
                 return True
-                break
-       
-        #winning_rate = sum(results) / len(results)
-        #return w / (w+l) >= self.config.eval.replace_rate
 
     def play_game(self, best_model, ng_model):
         env = GameEnv().reset()
