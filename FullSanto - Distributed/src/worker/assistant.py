@@ -290,7 +290,7 @@ class AssistantWorker:
             # see if this will break out of evaluating
             if(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
                 break
-            elif(self.dbx.files_list_folder('/state').entries[0].name == 'selftraining'):
+            elif(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
                 break
                 
             ng_win, white_is_best = self.play_game(self.best_model, ng_model)
