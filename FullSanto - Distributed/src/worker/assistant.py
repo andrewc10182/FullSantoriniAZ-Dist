@@ -44,7 +44,7 @@ class AssistantWorker:
         print('\nThe Strongest Version found is: ',self.version,'\n')
 
         while True:
-            if(len(dbx.files_list_folder('/state').entries)==0):
+            if(len(self.dbx.files_list_folder('/state').entries)==0):
                 time.sleep(10)
             else:
                 if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
