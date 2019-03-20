@@ -44,41 +44,44 @@ class AssistantWorker:
         print('\nThe Strongest Version found is: ',self.version,'\n')
 
         while True:
-            if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
-                # Try to empty the next generation folder before downloading
-                try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
-                except: dummy = 0
-                
-                self.model = self.load_model()
-                self.compile_model()
-                
-                target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
-                             self.generations_to_keep * self.play_files_per_generation)
-                self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+            if(len(dbx.files_list_folder('/state').entries)==0):
+                time.sleep(10)
+            else:
+                if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
+                    # Try to empty the next generation folder before downloading
+                    try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
+                    except: dummy = 0
 
-                print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
+                    self.model = self.load_model()
+                    self.compile_model()
 
-                self.self_play()
+                    target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+                                 self.generations_to_keep * self.play_files_per_generation)
+                    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
 
-            elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
-                try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
-                except: pass
-                time.sleep(60)  
-            elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
-                # Evaluating                
-                # Load either the latest ng model or the best model as self model
-                try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
-                except: pass
-            
-                self.model = self.load_model()
-                self.compile_model()
-                
-                print('\nLoading Best Model:')
-                self.best_model = self.load_best_model()
-                RetrainSuccessful = self.evaluate()
-                time.sleep(60)
+                    print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
 
-                self.dataset = None
+                    self.self_play()
+
+                elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
+                    try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
+                    except: pass
+                    time.sleep(60)  
+                elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
+                    # Evaluating                
+                    # Load either the latest ng model or the best model as self model
+                    try: self.remove_model(get_next_generation_model_dirs(self.config.resource)[0])
+                    except: pass
+
+                    self.model = self.load_model()
+                    self.compile_model()
+
+                    print('\nLoading Best Model:')
+                    self.best_model = self.load_best_model()
+                    RetrainSuccessful = self.evaluate()
+                    time.sleep(60)
+
+                    self.dataset = None
                 
     def self_play(self):
         self.buffer = []
