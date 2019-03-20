@@ -287,10 +287,8 @@ class AssistantWorker:
         #for game_idx in range(1,self.config.eval.game_num+1):
         while(len(self.dbx.files_list_folder('/EvaluateWinCount').entries) < self.config.eval.game_num):
             
-            # see if this will break out of evaluating
-            if(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
-                break
-            elif(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
+            # Break out of Evaluation loop if Evolver has already moved on to next stage
+            if(self.dbx.files_list_folder('/state').entries[0].name == ('training' or 'selfplaying')):
                 break
                 
             ng_win, white_is_best = self.play_game(self.best_model, ng_model)
