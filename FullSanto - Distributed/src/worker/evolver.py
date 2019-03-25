@@ -34,7 +34,7 @@ class EvolverWorker:
         self.best_is_white = True
         self.play_files_per_generation = 14 # each file this number of games
         self.nb_plays_per_file = 25
-        self.generations_to_keep = 10
+        self.generations_to_keep = 30
         self.play_files_on_dropbox = 0
         #self.evaluate_retries = 2
     def start(self):
