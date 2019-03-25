@@ -191,6 +191,11 @@ class EvolverWorker:
         except: dummy = 0
         last_load_data_step = last_save_step = total_steps = self.config.trainer.start_total_steps
         
+        # Load either the latest ng model or the best model as self model
+        self.model = None
+        self.model = self.load_model()
+        self.compile_model()
+        
         #if(self.evaluate_retries == 2):
         steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
         #else:
