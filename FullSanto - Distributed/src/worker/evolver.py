@@ -403,13 +403,12 @@ class EvolverWorker:
             if ww+wb+lw+lb > 300 and (ww+wb)/(ww+wb+lw+lb) < 0.5:
                 print("Less than 50% in 300 games, so giving up challenge\n")
                 return False
-            if lb+lw >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
-                print("Lose count reach", lb+lw," so give up challenge\n")
-                return False
-            
             if wb+ww >= self.config.eval.game_num * self.config.eval.replace_rate:
                 print("Win count reach", wb+ww," so change best model\n")
                 return True
+            if lb+lw >= self.config.eval.game_num * (1-self.config.eval.replace_rate):
+                print("Lose count reach", lb+lw," so give up challenge\n")
+                return False
 
     def play_game(self, best_model, ng_model):
         env = GameEnv().reset()
