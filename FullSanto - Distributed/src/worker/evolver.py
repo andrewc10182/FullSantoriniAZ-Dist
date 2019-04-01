@@ -182,7 +182,7 @@ class EvolverWorker:
 
     def compile_model(self):
         #lr = learning rate.  Satuated at Version 40 when lr = 1e-2
-        self.optimizer = SGD(lr=1e-3, momentum=0.9)
+        self.optimizer = SGD(lr=7e-3, momentum=0.9)
         losses = [objective_function_for_policy, objective_function_for_value]
         self.model.model.compile(optimizer=self.optimizer, loss=losses)
 
