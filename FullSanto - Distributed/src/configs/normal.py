@@ -18,7 +18,7 @@ class PlayDataConfig:
 
 class PlayConfig:
     def __init__(self):
-        self.simulation_num_per_move = 400 #800
+        self.simulation_num_per_move = 200 #800
         self.thinking_loop = 2
         self.logging_thinking = False
         self.c_puct = 1.5 #2
@@ -43,6 +43,6 @@ class ModelConfig:
     def __init__(self):
         self.cnn_filter_num = 128
         self.cnn_filter_size = 3
-        self.res_layer_num = 8
+        self.res_layer_num = 13 # Success one was 8
         self.l2_reg = 1e-4
         self.value_fc_size = 256
