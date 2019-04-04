@@ -195,7 +195,7 @@ class EvolverWorker:
         #self.compile_model()
         
         if(self.evaluate_retries == 999):
-            steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
+            steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint+1)
         else:
             steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation
 
