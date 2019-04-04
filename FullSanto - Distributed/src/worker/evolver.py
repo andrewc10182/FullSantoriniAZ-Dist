@@ -36,7 +36,7 @@ class EvolverWorker:
         self.nb_plays_per_file = 25
         self.generations_to_keep = 30
         self.play_files_on_dropbox = 0
-        #self.evaluate_retries = 2
+        self.evaluate_retries = 999
     def start(self):
         auth_token = 'UlBTypwXWYAAAAAAAAAAEP6hKysZi9cQKGZTmMu128TYEEig00w3b3mJ--b_6phN'
         self.dbx = dropbox.Dropbox(auth_token)  
@@ -95,26 +95,24 @@ class EvolverWorker:
                 try: self.dbx.files_delete('/state/evaluating')
                 except: pass
                 
-                #if(RetrainSuccessful or self.evaluate_retries <= 0):
-                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
-                self.dataset = None
-                    
-                #    self.evaluate_retries = 2
-                    
-                 # Update Dropbox's Target Counter to next number
-                target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
-                             self.generations_to_keep * self.play_files_per_generation)
-                self.dbx.files_delete('/target/'+str(target))
-                target = min(target + self.play_files_per_generation,
-                             self.generations_to_keep * self.play_files_per_generation)
-                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)  
+                if(RetrainSuccessful or self.evaluate_retries <= 0):
+                    res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
+                    self.dataset = None
+                    #    self.evaluate_retries = 2
+                    # Update Dropbox's Target Counter to next number
+                    target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+                                 self.generations_to_keep * self.play_files_per_generation)
+                    self.dbx.files_delete('/target/'+str(target))
+                    target = min(target + self.play_files_per_generation,
+                                 self.generations_to_keep * self.play_files_per_generation)
+                    res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)  
                 
-                #else:               
-                #    res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
-                #    self.dataset = None
+                else:               
+                    res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
+                    self.dataset = None
                     
-                #    self.evaluate_retries -= 1
-                #    print('Lets retry with more epoch.  Retries left is',self.evaluate_retries)
+                    self.evaluate_retries -= 1
+                    print('Lets retry with more epoch.  Retries left is',self.evaluate_retries)
                     
     def self_play(self):
         self.buffer = []
