@@ -194,10 +194,10 @@ class EvolverWorker:
         #self.model = self.load_model()
         #self.compile_model()
         
-        #if(self.evaluate_retries == 2):
-        steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
-        #else:
-        #steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation
+        if(self.evaluate_retries == 999):
+            steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
+        else:
+            steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation
 
         self.save_current_model()
         
