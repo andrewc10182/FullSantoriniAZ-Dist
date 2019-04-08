@@ -44,34 +44,39 @@ class EvolverWorker:
         print('\nThe Strongest Version found is: ',self.version,'\n')
         
         # Load either the latest ng model or the best model as self model
-        self.model = self.load_model()
-        self.compile_model()
+        #self.model = self.load_model()
+        #self.compile_model()
             
         while True:
             if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
+                self.model = self.load_model()
+                self.compile_model()
+                
                 self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
                 target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                              self.generations_to_keep * self.play_files_per_generation)
                 print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
 
-                while self.play_files_on_dropbox < target:
-                    self.self_play()
-                self.dbx.files_delete('/state/selfplaying')
-                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)   
+                #while self.play_files_on_dropbox < target:
+                #    self.self_play()
+                
+                self.self_play()
+                #self.dbx.files_delete('/state/selfplaying')
+                #res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)   
             
-            elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
+            #elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
                 # Training
                 self.load_play_data()
                 
                 self.training()
             
                 # Remove all Win Lose Records and start new again
-                for entry in self.dbx.files_list_folder('/EvaluateWinCount').entries:
-                    self.dbx.files_delete('/EvaluateWinCount/'+entry.name)
+                #for entry in self.dbx.files_list_folder('/EvaluateWinCount').entries:
+                #    self.dbx.files_delete('/EvaluateWinCount/'+entry.name)
                     
-                try: self.dbx.files_delete('/state/training')
-                except: dummy=0
-                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
+                #try: self.dbx.files_delete('/state/training')
+                #except: dummy=0
+                #res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/evaluating', dropbox.files.WriteMode.add, mute=True)
 
             elif(self.dbx.files_list_folder('/state').entries[0].name == 'evaluating'):
                 # Evaluating                
@@ -98,6 +103,7 @@ class EvolverWorker:
                 #if(RetrainSuccessful or self.evaluate_retries <= 0):
                 res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
                 self.dataset = None
+                
                 #    self.evaluate_retries = 2
                 # Update Dropbox's Target Counter to next number
                 #target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
@@ -128,12 +134,12 @@ class EvolverWorker:
             print("Game",idx," Time=",(end_time - start_time)," sec, Turn=", env.turn, env.observation, env.winner)
             idx += 1
             
-            self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
-            target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
-                     self.generations_to_keep * self.play_files_per_generation)
-            if(self.play_files_on_dropbox >= target):
-                print('\nSufficient Play Data available, moving on to training...')
-                break
+            #self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+            #target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+            #         self.generations_to_keep * self.play_files_per_generation)
+            #if(self.play_files_on_dropbox >= target):
+            #    print('\nSufficient Play Data available, moving on to training...')
+            #    break
 
     def load_model(self):    
         # If there's an existing next generation model, use it
@@ -180,7 +186,7 @@ class EvolverWorker:
 
     def compile_model(self):
         #lr = learning rate.  Satuated at Version 40 when lr = 1e-2
-        self.optimizer = SGD(lr=7e-4, momentum=0.9)
+        self.optimizer = SGD(lr=1e-2, momentum=0.9)
         losses = [objective_function_for_policy, objective_function_for_value]
         self.model.model.compile(optimizer=self.optimizer, loss=losses)
 
@@ -190,9 +196,9 @@ class EvolverWorker:
         last_load_data_step = last_save_step = total_steps = self.config.trainer.start_total_steps
         
         # Load either the latest ng model or the best model as self model
-        #self.model = None
-        #self.model = self.load_model()
-        #self.compile_model()
+        self.model = None
+        self.model = self.load_model()
+        self.compile_model()
         
         #if(self.evaluate_retries == 999):
         steps = self.train_epoch(1)
@@ -205,8 +211,8 @@ class EvolverWorker:
         print("New Model become best model:", model_dir)
             save_as_best_model(ng_model)
         
-        if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
-            self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)
+        #if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
+        #    self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)
 
     def load_play_data(self):
         for entry in self.dbx.files_list_folder('/play_data').entries:
