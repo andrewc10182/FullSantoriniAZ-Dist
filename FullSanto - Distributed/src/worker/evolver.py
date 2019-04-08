@@ -297,12 +297,12 @@ class EvolverWorker:
             tempstate = self.dataset[2][i].reshape(1,) 
             np.append(z_ary, tempstate,axis=0)
         
-        state_ary, policy_ary, z_ary = self.dataset
+        #state_ary, policy_ary, z_ary = self.dataset
         #print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
         
-        print('state_ary',type(state_ary),state_ary.shape,state_ary[0])
-        print('policy_ary',type(policy_ary),policy_ary.shape,policy_ary[0])
-        print('z_ary',type(z_ary),z_ary.shape,z_ary[0])
+        #print('state_ary',type(state_ary),state_ary.shape,state_ary[0])
+        #print('policy_ary',type(policy_ary),policy_ary.shape,policy_ary[0])
+        #print('z_ary',type(z_ary),z_ary.shape,z_ary[0])
         
         self.model.model.fit(state_ary, [policy_ary, z_ary],
                              batch_size=tc.batch_size,
