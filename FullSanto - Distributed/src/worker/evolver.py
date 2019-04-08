@@ -295,7 +295,7 @@ class EvolverWorker:
                 print(z_ary)
         
         state_ary, policy_ary, z_ary = self.dataset
-        print('dataset itself:',dataset[0])
+        print('dataset itself:',self.dataset[0])
         #print('state_ary',len(state_ary),state_ary[0])
         #print('policy_ary',len(policy_ary),policy_ary[0])
         #print('z_ary',len(z_ary),z_ary[0])
