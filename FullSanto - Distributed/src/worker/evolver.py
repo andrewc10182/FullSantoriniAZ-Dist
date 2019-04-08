@@ -293,6 +293,7 @@ class EvolverWorker:
         tc = self.config.trainer
         
         sam=random.sample(range(len(self.dataset[0])),tc.batch_size*100)
+        print('Randomizing',len(sam),'samples out of',len(state_ary[0]),'data in available data set.')
         state_ary = np.empty((4,5,5,0))
         state_ary = state_ary.reshape(0,4,5,5)
         policy_ary = np.empty((0,128))
