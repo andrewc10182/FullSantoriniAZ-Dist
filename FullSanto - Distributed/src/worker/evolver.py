@@ -280,18 +280,20 @@ class EvolverWorker:
     def train_epoch(self, epochs):
         tc = self.config.trainer
         
-        print('before unpack: len of dataset, dataset[0],1,2 are:',len(self.dataset),len(self.dataset[0]),len(self.dataset[1]),len(self.dataset[2]))
-        sam = random.sample(range(0,len(self.dataset[0])),tc.batch_size)
-        state_ary=[]
-        policy_ary=[]
-        z_ary=[]
-        for z in range(len(sam)):
-            state_ary.append(self.dataset[0][sam[z]])
-            policy_ary.append(self.dataset[1][sam[z]])
-            z_ary.append(self.dataset[2][sam[z]])
+        #print('before unpack: len of dataset, dataset[0],1,2 are:',len(self.dataset),len(self.dataset[0]),len(self.dataset[1]),len(self.dataset[2]))
+        #sam = random.sample(range(0,len(self.dataset[0])),tc.batch_size)
+        #state_ary=[]
+        #policy_ary=[]
+        #z_ary=[]
+        #for z in range(len(sam)):
+        #    state_ary.append(self.dataset[0][sam[z]])
+        #    policy_ary.append(self.dataset[1][sam[z]])
+        #    z_ary.append(self.dataset[2][sam[z]])
         
-        
-        #state_ary, policy_ary, z_ary = self.dataset
+        state_ary, policy_ary, z_ary = self.dataset
+        print('state',len(state),state[0])
+        print('policy',len(policy),policy[0])
+        print('z_ary',len(z_ary),z_ary[0])
         
         self.model.model.fit(state_ary, [policy_ary, z_ary],
                              batch_size=tc.batch_size,
