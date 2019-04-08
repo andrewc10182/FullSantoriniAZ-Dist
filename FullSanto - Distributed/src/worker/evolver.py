@@ -290,7 +290,7 @@ class EvolverWorker:
         #    thisdata = np.array([self.dataset[0][i],self.dataset[1][i],self.dataset[2][i]])
         #    np.append(newdataset, thisdata,axis=1)
         
-        #state_ary, policy_ary, z_ary = self.dataset
+        state_ary, policy_ary, z_ary = self.dataset
         #print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
         
         print('state_ary',type(state_ary),state_ary.shape,state_ary[0])
