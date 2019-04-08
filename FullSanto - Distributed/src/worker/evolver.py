@@ -209,7 +209,7 @@ class EvolverWorker:
         
         # AlphaZero Method - always save as best
         print("New Model become best model:", model_dir)
-            save_as_best_model(ng_model)
+        save_as_best_model(ng_model)
         
         #if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
         #    self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)
