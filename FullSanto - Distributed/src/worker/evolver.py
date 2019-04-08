@@ -282,7 +282,7 @@ class EvolverWorker:
         state_ary, policy_ary, z_ary = self.dataset
         self.model.model.fit(state_ary, [policy_ary, z_ary],
                              batch_size=tc.batch_size,
-                             epochs=epochs, verbose=1, shuffle=True)
+                             epochs=epochs, verbose=1, steps_per_epoch=5, shuffle=True)
         steps = (state_ary.shape[0] // tc.batch_size) * epochs
         return steps
 
