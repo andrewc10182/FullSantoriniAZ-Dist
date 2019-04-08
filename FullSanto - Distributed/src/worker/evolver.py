@@ -52,6 +52,9 @@ class EvolverWorker:
                 self.model = self.load_model()
                 self.compile_model()
                 
+                self.load_play_data()
+                self.training()
+                
                 self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
                 target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                              self.generations_to_keep * self.play_files_per_generation)
@@ -66,9 +69,8 @@ class EvolverWorker:
             
             #elif(self.dbx.files_list_folder('/state').entries[0].name == 'training'):
                 # Training
-                self.load_play_data()
-                
-                self.training()
+                #self.load_play_data()
+                #self.training()
             
                 # Remove all Win Lose Records and start new again
                 #for entry in self.dbx.files_list_folder('/EvaluateWinCount').entries:
