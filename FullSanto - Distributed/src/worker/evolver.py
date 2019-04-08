@@ -280,18 +280,22 @@ class EvolverWorker:
     def train_epoch(self, epochs):
         tc = self.config.trainer
         
-        #sam=random.sample(range(len(self.dataset[0])),tc.batch_size)
-        #newdataset = np.empty((3,0))   
+        sam=random.sample(range(len(self.dataset[0])),tc.batch_size)
+        #newdataset = np.empty((3,0))  
+        #state_ary = np.empty((1,0))
+        #policy_ary = np.empty((1,0))
+        #z_ary = np.empty((1,0))
+        
         #for i in range(len(sam)):
         #    thisdata = np.array([self.dataset[0][i],self.dataset[1][i],self.dataset[2][i]])
         #    np.append(newdataset, thisdata,axis=1)
-        state_ary, policy_ary, z_ary = self.dataset
         
+        #state_ary, policy_ary, z_ary = self.dataset
         #print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
         
-        print('state_ary',type(state_ary),len(state_ary),state_ary[0])
-        print('policy_ary',type(policy_ary),len(policy_ary),policy_ary[0])
-        print('z_ary',type(z_ary),len(z_ary),z_ary[0])
+        print('state_ary',type(state_ary),state_ary.shape,state_ary[0])
+        print('policy_ary',type(policy_ary),policy_ary.shape,policy_ary[0])
+        print('z_ary',type(z_ary),z_ary.shape,z_ary[0])
         
         self.model.model.fit(state_ary, [policy_ary, z_ary],
                              batch_size=tc.batch_size,
