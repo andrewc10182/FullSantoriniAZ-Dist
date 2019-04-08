@@ -280,25 +280,11 @@ class EvolverWorker:
     def train_epoch(self, epochs):
         tc = self.config.trainer
         
-        #print('before unpack: len of dataset, dataset[0],1,2 are:',len(self.dataset),len(self.dataset[0]),len(self.dataset[1]),len(self.dataset[2]))
-        #sam = random.sample(range(0,len(self.dataset[0])),tc.batch_size)
-        #state_ary=[]
-        #policy_ary=[]
-        #z_ary=[]
-        #for z in range(len(sam)):
-        #    state_ary.append(self.dataset[0][sam[z]].tolist())
-        #    policy_ary.append(self.dataset[1][sam[z]].tolist())
-        #    z_ary.append(self.dataset[2][sam[z]].tolist())
-        #    if(z==0):
-        #        print(state_ary)
-        #        print(policy_ary)
-        #        print(z_ary)
-        
         while(len(self.dataset[0])>tc.batch_size):
            remove = random.randint(0, len(self.dataset[0]))
-           self.dataset[0].pop(remove)
-           self.dataset[1].pop(remove)
-           self.dataset[2].pop(remove)
+           np.delete(self.dataset[0],remove,0)
+           np.delete(self.dataset[1],remove,0)
+           np.delete(self.dataset[2],remove,0)
             
         state_ary, policy_ary, z_ary = self.dataset
         #print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
