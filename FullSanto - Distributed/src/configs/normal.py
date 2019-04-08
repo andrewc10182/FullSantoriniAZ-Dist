@@ -33,8 +33,8 @@ class PlayConfig:
 
 class TrainerConfig:
     def __init__(self):
-        self.batch_size = 2048
-        self.epoch_to_checkpoint = 2
+        self.batch_size = 1024
+        self.epoch_to_checkpoint = 1
         self.start_total_steps = 0
         self.save_model_steps = 9999 # 150
         self.load_data_steps = 9999 # 150
@@ -43,6 +43,6 @@ class ModelConfig:
     def __init__(self):
         self.cnn_filter_num = 128
         self.cnn_filter_size = 3
-        self.res_layer_num = 13 # Success one was 8
+        self.res_layer_num = 18 # Success one was 8
         self.l2_reg = 1e-4
         self.value_fc_size = 256
