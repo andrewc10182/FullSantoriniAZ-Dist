@@ -286,16 +286,17 @@ class EvolverWorker:
         policy_ary=[]
         z_ary=[]
         for z in range(len(sam)):
-            state_ary.append(self.dataset[0][sam[z]])
-            policy_ary.append(self.dataset[1][sam[z]])
-            z_ary.append(self.dataset[2][sam[z]])
+            state_ary.append(self.dataset[0][sam[z]].tolist())
+            policy_ary.append(self.dataset[1][sam[z]].tolist())
+            z_ary.append(self.dataset[2][sam[z]].tolist())
             if(z==0):
                 print(state_ary)
                 print(policy_ary)
                 print(z_ary)
         
-        state_ary, policy_ary, z_ary = self.dataset
-        print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
+        #state_ary, policy_ary, z_ary = self.dataset
+        #print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
+        
         #print('state_ary',len(state_ary),state_ary[0])
         #print('policy_ary',len(policy_ary),policy_ary[0])
         #print('z_ary',len(z_ary),z_ary[0])
