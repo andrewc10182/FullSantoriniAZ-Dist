@@ -36,7 +36,7 @@ class EvolverWorker:
         self.nb_plays_per_file = 25
         self.generations_to_keep = 30
         self.play_files_on_dropbox = 0
-        self.evaluate_retries = 999
+        #self.evaluate_retries = 999
     def start(self):
         auth_token = 'UlBTypwXWYAAAAAAAAAAEP6hKysZi9cQKGZTmMu128TYEEig00w3b3mJ--b_6phN'
         self.dbx = dropbox.Dropbox(auth_token)  
@@ -95,24 +95,24 @@ class EvolverWorker:
                 try: self.dbx.files_delete('/state/evaluating')
                 except: pass
                 
-                if(RetrainSuccessful or self.evaluate_retries <= 0):
-                    res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
-                    self.dataset = None
-                    #    self.evaluate_retries = 2
-                    # Update Dropbox's Target Counter to next number
-                    target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
-                                 self.generations_to_keep * self.play_files_per_generation)
-                    self.dbx.files_delete('/target/'+str(target))
-                    target = min(target + self.play_files_per_generation,
-                                 self.generations_to_keep * self.play_files_per_generation)
-                    res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)  
+                #if(RetrainSuccessful or self.evaluate_retries <= 0):
+                res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/selfplaying', dropbox.files.WriteMode.add, mute=True)
+                self.dataset = None
+                #    self.evaluate_retries = 2
+                # Update Dropbox's Target Counter to next number
+                #target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+                #             self.generations_to_keep * self.play_files_per_generation)
+                #self.dbx.files_delete('/target/'+str(target))
+                #target = min(target + self.play_files_per_generation,
+                #             self.generations_to_keep * self.play_files_per_generation)
+                #res = self.dbx.files_upload(bytes('abc', 'utf8'), '/target/'+str(target), dropbox.files.WriteMode.add, mute=True)  
                 
-                else:               
-                    res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
-                    self.dataset = None
+                #else:               
+                #    res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)
+                #    self.dataset = None
                     
-                    self.evaluate_retries -= 1
-                    print('Lets retry with more epoch.  Retries left is',self.evaluate_retries)
+                #    self.evaluate_retries -= 1
+                #    print('Lets retry with more epoch.  Retries left is',self.evaluate_retries)
                     
     def self_play(self):
         self.buffer = []
@@ -194,12 +194,16 @@ class EvolverWorker:
         #self.model = self.load_model()
         #self.compile_model()
         
-        if(self.evaluate_retries == 999):
-            steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint-1)
-        else:
-            steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation
+        #if(self.evaluate_retries == 999):
+        steps = self.train_epoch(1)
+        #else:
+        #    steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation
 
-        self.save_current_model()
+        #self.save_current_model()
+        
+        # AlphaZero Method - always save as best
+        print("New Model become best model:", model_dir)
+            save_as_best_model(ng_model)
         
         if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
             self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)
@@ -280,7 +284,7 @@ class EvolverWorker:
     def train_epoch(self, epochs):
         tc = self.config.trainer
         
-        sam=random.sample(range(len(self.dataset[0])),tc.batch_size)
+        sam=random.sample(range(len(self.dataset[0])),tc.batch_size*100)
         state_ary = np.empty((4,5,5,0))
         state_ary = state_ary.reshape(0,4,5,5)
         policy_ary = np.empty((0,128))
