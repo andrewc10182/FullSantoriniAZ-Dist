@@ -291,8 +291,8 @@ class EvolverWorker:
         #    z_ary.append(self.dataset[2][sam[z]])
         
         state_ary, policy_ary, z_ary = self.dataset
-        print('state',len(state),state[0])
-        print('policy',len(policy),policy[0])
+        print('state_ary',len(state_ary),state_ary[0])
+        print('policy_ary',len(policy_ary),policy_ary[0])
         print('z_ary',len(z_ary),z_ary[0])
         
         self.model.model.fit(state_ary, [policy_ary, z_ary],
