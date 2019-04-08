@@ -280,7 +280,7 @@ class EvolverWorker:
     def train_epoch(self, epochs):
         tc = self.config.trainer
         
-        sam = random.sample(range(0,self.dataset[0]),tc.batch_size*10)
+        sam = random.sample(range(0,len(self.dataset[0])),tc.batch_size*10)
         newdataset=[]    
         for z in range(len(sam)):
             newdataset.append([self.dataset[0][sam[z]],self.dataset[1][sam[z]],self.dataset[2][sam[z]]])
