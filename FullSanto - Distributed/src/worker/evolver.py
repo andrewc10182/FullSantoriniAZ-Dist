@@ -281,7 +281,7 @@ class EvolverWorker:
         tc = self.config.trainer
         
         while(len(self.dataset[0])>tc.batch_size):
-           remove = random.randint(0, len(self.dataset[0]))
+           remove = random.randint(0, len(self.dataset[0])-1)
            np.delete(self.dataset[0],remove,0)
            np.delete(self.dataset[1],remove,0)
            np.delete(self.dataset[2],remove,0)
