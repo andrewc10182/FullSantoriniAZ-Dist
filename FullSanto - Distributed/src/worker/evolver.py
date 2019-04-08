@@ -280,13 +280,14 @@ class EvolverWorker:
     def train_epoch(self, epochs):
         tc = self.config.trainer
         
-        while(len(self.dataset[0])>tc.batch_size):
-           remove = random.randint(0, len(self.dataset[0])-1)
-           np.delete(self.dataset[0],remove,0)
-           np.delete(self.dataset[1],remove,0)
-           np.delete(self.dataset[2],remove,0)
-            
-        state_ary, policy_ary, z_ary = self.dataset
+        sam=random.sample(len(self.dataset[0]),tc.batch_size)
+        newdataset = np.empty((3,0))   
+        
+        for i in range(len(sam)):
+            thisdata = np.array([self.dataset[0][i],self.dataset[1][i],self.dataset[2][i]])
+            np.append(newdataset, thisdata,axis=1)
+        #state_ary, policy_ary, z_ary = self.dataset
+        
         #print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
         
         #print('state_ary',len(state_ary),state_ary[0])
