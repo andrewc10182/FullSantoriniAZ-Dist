@@ -279,8 +279,8 @@ class EvolverWorker:
 
     def train_epoch(self, epochs):
         tc = self.config.trainer
-        
-        newdataset = random.sample(self.dataset, tc.batch_size*10)
+        print('Original Dataset size is',len(self.dataset[0])
+        newdataset = random.sample(self.dataset, tc.batch_size*5)
         state_ary, policy_ary, z_ary = newdataset
         #state_ary, policy_ary, z_ary = self.dataset
         
