@@ -279,10 +279,14 @@ class EvolverWorker:
 
     def train_epoch(self, epochs):
         tc = self.config.trainer
-        state_ary, policy_ary, z_ary = self.dataset
+        
+        newdataset = random.sample(self.dataset, tc.batch_size,*5)
+        state_ary, policy_ary, z_ary = newdataset
+        #state_ary, policy_ary, z_ary = self.dataset
+        
         self.model.model.fit(state_ary, [policy_ary, z_ary],
                              batch_size=tc.batch_size,
-                             epochs=epochs, verbose=1, steps_per_epoch=5, shuffle=True)
+                             epochs=1, verbose=1, shuffle=True)
         steps = (state_ary.shape[0] // tc.batch_size) * epochs
         return steps
 
