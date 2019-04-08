@@ -285,8 +285,7 @@ class EvolverWorker:
         state_ary = state_ary.reshape(0,4,5,5)
         policy_ary = np.empty((0,128))
         z_ary = np.empty((0,))
-        
-        
+   
         for i in range(len(sam)):
             tempstate = self.dataset[0][i].reshape(1,4,5,5)  
             np.append(state_ary, tempstate,axis=0)
@@ -294,9 +293,9 @@ class EvolverWorker:
             tempstate = self.dataset[1][i].reshape(1,128)  
             print(policy_ary.shape, tempstate.shape)
             np.append(policy_ary, tempstate,axis=0)
-            print('success append policy')
-            np.append(z_ary, self.dataset[2][i],axis=0)
-            print('success append z')
+
+            tempstate = self.dataset[2][i].reshape(1,) 
+            np.append(z_ary, tempstate,axis=0)
         
         state_ary, policy_ary, z_ary = self.dataset
         #print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
