@@ -295,6 +295,7 @@ class EvolverWorker:
 
             tempstate = self.dataset[2][i].reshape(1,) 
             np.append(z_ary, tempstate,axis=0)
+            print(state_ary.shape, policy_ary.shape, z_ary.shape)
         
         #state_ary, policy_ary, z_ary = self.dataset
         #print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
