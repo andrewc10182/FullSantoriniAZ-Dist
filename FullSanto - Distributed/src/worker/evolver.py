@@ -281,7 +281,6 @@ class EvolverWorker:
         tc = self.config.trainer
         
         sam=random.sample(range(len(self.dataset[0])),tc.batch_size)
-        #newdataset = np.empty((1,0))  
         state_ary = np.empty((4,5,5,0))
         state_ary = state_ary.reshape(0,4,5,5)
         policy_ary = np.empty((0,128))
@@ -289,15 +288,17 @@ class EvolverWorker:
         
         
         for i in range(len(sam)):
-            print(state_ary.shape, self.dataset[0][i].shape)
-            print(self.dataset[0][i])
+            self.dataset[0][i] = self.dataset[0][i].reshape(1,4,5,5)
             np.append(state_ary, self.dataset[0][i],axis=0)
+            print('success append state')
             np.append(policy_ary, self.dataset[1][i],axis=0)
+            print('success append policy')
             np.append(z_ary, self.dataset[2][i],axis=0)
+            print('success append z')
             #thisdata = np.array([self.dataset[0][i],self.dataset[1][i],self.dataset[2][i]])
             #np.append(newdataset, thisdata,axis=1)
         
-        #state_ary, policy_ary, z_ary = self.dataset
+        state_ary, policy_ary, z_ary = self.dataset
         #print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
         
         print('state_ary',type(state_ary),state_ary.shape,state_ary[0])
