@@ -295,7 +295,7 @@ class EvolverWorker:
         #        print(z_ary)
         
         while(len(self.dataset[0])>tc.batch_size):
-           remove = random.randint(0, self.dataset[0])
+           remove = random.randint(0, len(self.dataset[0]))
            self.dataset[0].pop(remove)
            self.dataset[1].pop(remove)
            self.dataset[2].pop(remove)
