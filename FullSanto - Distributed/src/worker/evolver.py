@@ -281,19 +281,24 @@ class EvolverWorker:
         tc = self.config.trainer
         
         #print('before unpack: len of dataset, dataset[0],1,2 are:',len(self.dataset),len(self.dataset[0]),len(self.dataset[1]),len(self.dataset[2]))
-        #sam = random.sample(range(0,len(self.dataset[0])),tc.batch_size)
-        #state_ary=[]
-        #policy_ary=[]
-        #z_ary=[]
-        #for z in range(len(sam)):
-        #    state_ary.append(self.dataset[0][sam[z]])
-        #    policy_ary.append(self.dataset[1][sam[z]])
-        #    z_ary.append(self.dataset[2][sam[z]])
+        sam = random.sample(range(0,len(self.dataset[0])),tc.batch_size)
+        state_ary=[]
+        policy_ary=[]
+        z_ary=[]
+        for z in range(len(sam)):
+            state_ary.append(self.dataset[0][sam[z]])
+            policy_ary.append(self.dataset[1][sam[z]])
+            z_ary.append(self.dataset[2][sam[z]])
+            if(z==0):
+                print(state_ary)
+                print(policy_ary)
+                print(z_ary)
         
         state_ary, policy_ary, z_ary = self.dataset
-        print('state_ary',len(state_ary),state_ary[0])
-        print('policy_ary',len(policy_ary),policy_ary[0])
-        print('z_ary',len(z_ary),z_ary[0])
+        print('dataset itself:',dataset[0])
+        #print('state_ary',len(state_ary),state_ary[0])
+        #print('policy_ary',len(policy_ary),policy_ary[0])
+        #print('z_ary',len(z_ary),z_ary[0])
         
         self.model.model.fit(state_ary, [policy_ary, z_ary],
                              batch_size=tc.batch_size,
