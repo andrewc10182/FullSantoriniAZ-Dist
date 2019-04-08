@@ -103,10 +103,10 @@ class AssistantWorker:
                 self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
                 target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                          self.generations_to_keep * self.play_files_per_generation)
-                if(self.play_files_on_dropbox >= target):
-                    print('\nSufficient Play Data available, main Evolver is training...')
-                    time.sleep(60)
-                    break
+                #if(self.play_files_on_dropbox >= target):
+                #    print('\nSufficient Play Data available, main Evolver is training...')
+                #    time.sleep(60)
+                #    break
             except: 'Cannot connect to Dropbox, this try saved the day!'
 
     def load_model(self):            
@@ -423,8 +423,13 @@ class AssistantWorker:
                 data = f.read()
             res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
         else:
-            print('Sufficient games are in Dropbox.  Self Play games not saved.  Waiting for Training...')
-            time.sleep(60)
+            print('Removing 1 old file & Contributing self-play games to Dropbox...')
+            self.dbx.files_delete('/play_data/'+self.dbx.files_list_folder('/play_data').entries[0].name)
+            with open(path, 'rb') as f:
+                data = f.read()
+            res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
+            #print('Sufficient games are in Dropbox.  Self Play games not saved.  Waiting for Training...')
+            #time.sleep(60)
         self.buffer = []
 
     def remove_play_data(self):
