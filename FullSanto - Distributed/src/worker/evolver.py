@@ -211,8 +211,9 @@ class EvolverWorker:
         self.save_current_model() # Saves it into next_generation
         ng_model, model_dir = self.load_next_generation_model()
         print("New Model become best model:", model_dir)
-        save_as_best_model(ng_model)
+        
         self.best_model = ng_model
+        save_as_best_model(ng_model)
         self.remove_model(model_dir) # Remove all Next Generation
         
         #if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
