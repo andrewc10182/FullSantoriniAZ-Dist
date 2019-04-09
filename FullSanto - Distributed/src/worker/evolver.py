@@ -234,7 +234,7 @@ class EvolverWorker:
         
         ## Only randomly pick 20 play files, not all out of 300 max
         print('Randomly picking files for training...')
-        filenames = random.choices(population=filenames, k=20)
+        filenames = random.choices(population=filenames, k=45)
         print('Randomly picked',len(filenames),'files')
         
         updated = False
