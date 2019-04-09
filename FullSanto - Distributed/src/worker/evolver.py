@@ -217,8 +217,8 @@ class EvolverWorker:
     
         with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/model_best_weight.h5', 'rb') as f:
             #with open('./data/model/model_best_weight.h5', 'rb') as f:
-                data = f.read()
-            res = self.dbx.files_upload(data, '/model/model_best_weight.h5', dropbox.files.WriteMode.overwrite, mute=True)
+            data = f.read()
+        res = self.dbx.files_upload(data, '/model/model_best_weight.h5', dropbox.files.WriteMode.overwrite, mute=True)
         
         self.remove_model(model_dir) # Remove all Next Generation
         #if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
