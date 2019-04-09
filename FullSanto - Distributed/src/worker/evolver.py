@@ -310,7 +310,7 @@ class EvolverWorker:
         #    z_ary = np.append(z_ary, tempstate,axis=0)
         
         state_ary, policy_ary, z_ary = self.dataset
-        while len(state_ary)>tc.batch_size:
+        while len(state_ary)>tc.batch_size*100:
             temp=random.randint(0, len(state_ary)-1)
             state_ary=np.delete(state_ary,temp, 0)
             policy_ary=np.delete(policy_ary,temp, 0)
