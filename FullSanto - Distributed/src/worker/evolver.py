@@ -127,8 +127,8 @@ class EvolverWorker:
         idx = 1
 
         for _ in range(self.nb_plays_per_file):
-            if((idx-1) % 10 == 0):
-                self.load_play_data() # Utilize the time when others are self-play, start loading new play data
+            #if((idx-1) % 10 == 0):
+            #    self.load_play_data() # Utilize the time when others are self-play, start loading new play data
             
             start_time = time.time()            
             env = self.self_play_game(idx)
