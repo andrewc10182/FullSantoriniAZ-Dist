@@ -214,8 +214,13 @@ class EvolverWorker:
         
         self.best_model = ng_model
         save_as_best_model(ng_model)
-        self.remove_model(model_dir) # Remove all Next Generation
+    
+        with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/model/model_best_weight.h5', 'rb') as f:
+            #with open('./data/model/model_best_weight.h5', 'rb') as f:
+                data = f.read()
+            res = self.dbx.files_upload(data, '/model/model_best_weight.h5', dropbox.files.WriteMode.overwrite, mute=True)
         
+        self.remove_model(model_dir) # Remove all Next Generation
         #if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
         #    self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)
 
@@ -228,7 +233,9 @@ class EvolverWorker:
         filenames = get_game_data_filenames(self.config.resource)
         
         ## Only randomly pick 20 play files, not all out of 300 max
+        print('Randomly picking files for training...')
         filenames = random.choices(population=filenames, k=20)
+        print('Randomly picked',len(filenames),'files')
         
         updated = False
         for filename in filenames:
