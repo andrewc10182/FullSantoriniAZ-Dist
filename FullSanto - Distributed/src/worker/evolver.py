@@ -227,6 +227,9 @@ class EvolverWorker:
                 f.write(res.content)
         filenames = get_game_data_filenames(self.config.resource)
         
+        ## Only randomly pick 20 play files, not all out of 300 max
+        filenames = random.choices(population=filenames, k=20)
+        
         updated = False
         for filename in filenames:
             if filename not in self.loaded_filenames:
@@ -311,16 +314,16 @@ class EvolverWorker:
         #    z_ary = np.append(z_ary, tempstate,axis=0)
         
         state_ary, policy_ary, z_ary = self.dataset
-        while len(state_ary)>tc.batch_size*100:
-            temp=random.randint(0, len(state_ary)-1)
-            state_ary=np.delete(state_ary,temp, 0)
-            policy_ary=np.delete(policy_ary,temp, 0)
-            z_ary = np.delete(z_ary, temp, 0)
-        print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
+        #while len(state_ary)>tc.batch_size*100:
+        #    temp=random.randint(0, len(state_ary)-1)
+        #    state_ary=np.delete(state_ary,temp, 0)
+        #    policy_ary=np.delete(policy_ary,temp, 0)
+        #    z_ary = np.delete(z_ary, temp, 0)
+        #print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
         
-        print('state_ary',type(state_ary),state_ary.shape,state_ary[0])
-        print('policy_ary',type(policy_ary),policy_ary.shape,policy_ary[0])
-        print('z_ary',type(z_ary),z_ary.shape,z_ary[0])
+        #print('state_ary',type(state_ary),state_ary.shape,state_ary[0])
+        #print('policy_ary',type(policy_ary),policy_ary.shape,policy_ary[0])
+        #print('z_ary',type(z_ary),z_ary.shape,z_ary[0])
         
         self.model.model.fit(state_ary, [policy_ary, z_ary],
                              batch_size=tc.batch_size,
