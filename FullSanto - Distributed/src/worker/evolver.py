@@ -205,13 +205,15 @@ class EvolverWorker:
         #if(self.evaluate_retries == 999):
         steps = self.train_epoch(1)
         #else:
-        #    steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation
-
-        #self.save_current_model()
+        #    steps = self.train_epoch(1) # Just train 1 more epoch for retry evaluation 
         
         # AlphaZero Method - always save as best
+        self.save_current_model() # Saves it into next_generation
+        ng_model, model_dir = self.load_next_generation_model()
         print("New Model become best model:", model_dir)
         save_as_best_model(ng_model)
+        self.best_model = ng_model
+        self.remove_model(model_dir) # Remove all Next Generation
         
         #if(len(self.dbx.files_list_folder('/model/next_generation/').entries)>1):
         #    self.dbx.files_delete('/model/next_generation/'+self.dbx.files_list_folder('/model/next_generation').entries[0].name)
@@ -292,26 +294,28 @@ class EvolverWorker:
     def train_epoch(self, epochs):
         tc = self.config.trainer
         
-        sam=random.sample(range(len(self.dataset[0])),tc.batch_size*100)
-        print('Randomizing',len(sam),'samples out of',len(self.dataset[0]),'data in available data set.')
-        state_ary = np.empty((4,5,5,0))
-        state_ary = state_ary.reshape(0,4,5,5)
-        policy_ary = np.empty((0,128))
-        z_ary = np.empty((0,))
+        #sam=random.sample(range(len(self.dataset[0])),tc.batch_size*100)
+        #print('Randomizing',len(sam),'samples out of',len(self.dataset[0]),'data in available data set.')
+        #state_ary = np.empty((4,5,5,0))
+        #state_ary = state_ary.reshape(0,4,5,5)
+        #policy_ary = np.empty((0,128))
+        #z_ary = np.empty((0,))
    
-        for i in range(len(sam)):
-            tempstate = self.dataset[0][i].reshape(1,4,5,5)  
-            state_ary = np.append(state_ary, tempstate,axis=0)
-            
-            tempstate = self.dataset[1][i].reshape(1,128)  
-            policy_ary = np.append(policy_ary, tempstate,axis=0)
-
-            tempstate = self.dataset[2][i].reshape(1,) 
-            z_ary = np.append(z_ary, tempstate,axis=0)
-            #print(state_ary.shape, policy_ary.shape, z_ary.shape)
+        #for i in range(len(sam)):
+        #    tempstate = self.dataset[0][i].reshape(1,4,5,5)  
+        #    state_ary = np.append(state_ary, tempstate,axis=0)    
+        #    tempstate = self.dataset[1][i].reshape(1,128)  
+        #    policy_ary = np.append(policy_ary, tempstate,axis=0)
+        #    tempstate = self.dataset[2][i].reshape(1,) 
+        #    z_ary = np.append(z_ary, tempstate,axis=0)
         
-        #state_ary, policy_ary, z_ary = self.dataset
-        #print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
+        state_ary, policy_ary, z_ary = self.dataset
+        while len(state_ary)>tc.batch_size:
+            temp=random.randint(0, len(state_ary)-1)
+            state_ary=np.delete(state_ary,temp, 0)
+            policy_ary=np.delete(policy_ary,temp, 0)
+            z_ary = np.delete(z_ary, temp, 0)
+        print('dataset itself:',state_ary[0], policy_ary[0],z_ary[0])
         
         print('state_ary',type(state_ary),state_ary.shape,state_ary[0])
         print('policy_ary',type(policy_ary),policy_ary.shape,policy_ary[0])
