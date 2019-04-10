@@ -49,8 +49,9 @@ class EvolverWorker:
             
         while True:
             if(self.dbx.files_list_folder('/state').entries[0].name == 'selfplaying'):
-                self.model = self.load_model()
-                self.compile_model()
+                if(self.model == None):
+                    self.model = self.load_model()
+                    self.compile_model()
                 
                 self.load_play_data()
                 self.training()
@@ -553,14 +554,32 @@ class EvolverWorker:
         print("save play data to ",path)
         write_game_data_to_file(path, self.buffer)
         
-        # Saving File to Drop Box
+        # Saving File to Drop Box - AlphaZero Version
+        target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
+             self.generations_to_keep * self.play_files_per_generation)
         self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+        
+        if(self.play_files_on_dropbox < target):
+            print('Contributing self-play games to Dropbox...')
+            with open(path, 'rb') as f:
+                data = f.read()
+            res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
+        else:
+            print('Removing 1 old file & Contributing self-play games to Dropbox...')
+            self.dbx.files_delete('/play_data/'+self.dbx.files_list_folder('/play_data').entries[0].name)
+            with open(path, 'rb') as f:
+                data = f.read()
+            res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
+        self.buffer = []
+
+        # Saving File to Drop Box - AlphaGo Zero Version
+        #self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
         #self.min_play_files_to_learn = min(self.version + 1, self.generations_to_keep) * self.play_files_per_generation 
         #if self.play_files_on_dropbox < self.min_play_files_to_learn:            
-        with open(path, 'rb') as f:
-            data = f.read()
-        res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
-        self.buffer = []
+        #with open(path, 'rb') as f:
+        #    data = f.read()
+        #res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
+        #self.buffer = []
 
     def remove_play_data(self):
         files = get_game_data_filenames(self.config.resource)
