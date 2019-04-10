@@ -241,7 +241,8 @@ class EvolverWorker:
                 with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/play_data/'+entry.name, 'wb') as f:  
                 #with open('./data/play_data/'+entry.name, 'wb') as f:  
                     f.write(res.content)
-        #filenames = get_game_data_filenames(self.config.resource)
+                    
+        filenames = get_game_data_filenames(self.config.resource)
         ## Only randomly pick 45 play files, not all out of 300 max
         print('Done Randomly picked',len(filenames),'files')
         
