@@ -246,7 +246,7 @@ class EvolverWorker:
                     
         filenames = get_game_data_filenames(self.config.resource)
         ## Only randomly pick 45 play files, not all out of 300 max
-        print('Done Randomly picked',len(filenames),'files')
+        
         
         updated = False
         for filename in filenames:
@@ -260,7 +260,8 @@ class EvolverWorker:
         if updated:
             print("Updated Play Data.\n")
             self.dataset = self.collect_all_loaded_data()
-
+        print('Done Randomly picked',len(filenames),'files')
+        
     def load_data_from_file(self, filename):
         try:
             print("loading data from ",filename)
