@@ -235,6 +235,8 @@ class EvolverWorker:
         print('After selection, filename has this number of names:',len(filenames)) 
         print('Start downloading these files now:')
         
+        self.remove_all_play_data()
+        
         for entry in self.dbx.files_list_folder('/play_data').entries:
             if(entry.name in filenames):
                 md, res = self.dbx.files_download('/play_data/'+entry.name)
