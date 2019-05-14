@@ -570,17 +570,18 @@ class EvolverWorker:
              self.generations_to_keep * self.play_files_per_generation)
         self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
         
-        if(self.play_files_on_dropbox < target):
-            print('Contributing self-play games to Dropbox...')
-            with open(path, 'rb') as f:
-                data = f.read()
-            res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
-        else:
-            print('Removing 1 old file & Contributing self-play games to Dropbox...')
-            self.dbx.files_delete('/play_data/'+self.dbx.files_list_folder('/play_data').entries[0].name)
-            with open(path, 'rb') as f:
-                data = f.read()
-            res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
+        #if(self.play_files_on_dropbox < target):
+        #    print('Contributing self-play games to Dropbox...')
+        #    with open(path, 'rb') as f:
+        #        data = f.read()
+        #    res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
+        #else:
+        print('Removing 1 old file & Contributing self-play games to Dropbox...')
+        self.dbx.files_delete('/play_data/'+self.dbx.files_list_folder('/play_data').entries[0].name)
+        with open(path, 'rb') as f:
+            data = f.read()
+        res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
+            
         self.buffer = []
 
         # Saving File to Drop Box - AlphaGo Zero Version
