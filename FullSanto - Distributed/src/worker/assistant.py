@@ -424,9 +424,8 @@ class AssistantWorker:
         #    res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
         #else:
         
-        # Temporarily remove this to increase number of files from 300 to 400
-        #print('Removing 1 old file & Contributing self-play games to Dropbox...')
-        #self.dbx.files_delete('/play_data/'+self.dbx.files_list_folder('/play_data').entries[0].name)
+        print('Removing 1 old file & Contributing self-play games to Dropbox...')
+        self.dbx.files_delete('/play_data/'+self.dbx.files_list_folder('/play_data').entries[0].name)
         
         with open(path, 'rb') as f:
             data = f.read()
