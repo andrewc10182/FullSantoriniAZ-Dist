@@ -240,7 +240,7 @@ class EvolverWorker:
         for entry in self.dbx.files_list_folder('/pdata').entries:
             if(entry.name in filenames):
                 md, res = self.dbx.files_download('/pdata/'+entry.name)
-                with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/pdata/'+entry.name, 'wb') as f:  
+                with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/play_data/'+entry.name, 'wb') as f:  
                 #with open('./data/play_data/'+entry.name, 'wb') as f:  
                     f.write(res.content)
                     
