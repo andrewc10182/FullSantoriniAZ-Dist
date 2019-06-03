@@ -57,7 +57,7 @@ class AssistantWorker:
 
                     target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                                  self.generations_to_keep * self.play_files_per_generation)
-                    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+                    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/pdata').entries)
 
                     print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
 
@@ -100,7 +100,7 @@ class AssistantWorker:
             idx += 1
             
             try:
-                self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+                self.play_files_on_dropbox = len(self.dbx.files_list_folder('/pdata').entries)
                 target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                          self.generations_to_keep * self.play_files_per_generation)
                 #if(self.play_files_on_dropbox >= target):
@@ -415,7 +415,7 @@ class AssistantWorker:
         # Saving File to Drop Box
         target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
              self.generations_to_keep * self.play_files_per_generation)
-        self.play_files_on_dropbox = len(self.dbx.files_list_folder('/play_data').entries)
+        self.play_files_on_dropbox = len(self.dbx.files_list_folder('/pdata').entries)
         
         #if(self.play_files_on_dropbox < target):
         #    print('Contributing self-play games to Dropbox...')
@@ -425,11 +425,11 @@ class AssistantWorker:
         #else:
         
         print('Removing 1 old file & Contributing self-play games to Dropbox...')
-        self.dbx.files_delete('/play_data/'+self.dbx.files_list_folder('/play_data').entries[0].name)
+        self.dbx.files_delete('/pdata/'+self.dbx.files_list_folder('/pdata').entries[0].name)
         
         with open(path, 'rb') as f:
             data = f.read()
-        res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
+        res = self.dbx.files_upload(data, '/pdata/'+filename, dropbox.files.WriteMode.add, mute=True)
             
             #print('Sufficient games are in Dropbox.  Self Play games not saved.  Waiting for Training...')
             #time.sleep(60)
