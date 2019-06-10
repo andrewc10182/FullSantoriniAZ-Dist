@@ -232,7 +232,7 @@ class EvolverWorker:
             filenames.append(entry.name)
         print('Now Filename has this number of names:',len(filenames))
         print('Randomly picking files for training...')
-        filenames = random.choices(population=filenames, k=45)
+        filenames = random.choices(population=filenames, k=75) ## changed k from 45 to 75
         print('After selection, filename has this number of names:',len(filenames)) 
         print('Start downloading these files now:')
         
