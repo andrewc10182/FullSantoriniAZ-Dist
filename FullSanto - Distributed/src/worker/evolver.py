@@ -64,7 +64,8 @@ class EvolverWorker:
                 #while self.play_files_on_dropbox < target:
                 #    self.self_play()
                 
-                self.self_play()
+                # self.self_play() # COmment this out so no more self play by evolver!!!
+                
                 #self.dbx.files_delete('/state/selfplaying')
                 #res = self.dbx.files_upload(bytes('abc', 'utf8'), '/state/training', dropbox.files.WriteMode.add, mute=True)   
             
