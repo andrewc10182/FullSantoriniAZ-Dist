@@ -101,7 +101,7 @@ class AssistantWorker:
             idx += 1
             
             try:
-                self.play_files_on_dropbox = len(self.dbx.files_list_folder('self.github_play_folder).entries)
+                self.play_files_on_dropbox = len(self.dbx.files_list_folder(self.github_play_folder).entries)
                 target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                          self.generations_to_keep * self.play_files_per_generation)
                 #if(self.play_files_on_dropbox >= target):
@@ -416,7 +416,7 @@ class AssistantWorker:
         # Saving File to Drop Box
         target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
              self.generations_to_keep * self.play_files_per_generation)
-        self.play_files_on_dropbox = len(self.dbx.files_list_folder('self.github_play_folder).entries)
+        self.play_files_on_dropbox = len(self.dbx.files_list_folder(self.github_play_folder).entries)
         
         #if(self.play_files_on_dropbox < target):
         #    print('Contributing self-play games to Dropbox...')
