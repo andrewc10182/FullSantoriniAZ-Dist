@@ -37,6 +37,7 @@ class EvolverWorker:
         self.generations_to_keep = 30
         self.play_files_on_dropbox = 0
         #self.evaluate_retries = 999
+        self.github_play_folder = '/play_data'
     def start(self):
         auth_token = 'UlBTypwXWYAAAAAAAAAAEP6hKysZi9cQKGZTmMu128TYEEig00w3b3mJ--b_6phN'
         self.dbx = dropbox.Dropbox(auth_token)  
@@ -56,7 +57,7 @@ class EvolverWorker:
                 self.load_play_data()
                 self.training()
                 
-                self.play_files_on_dropbox = len(self.dbx.files_list_folder('/pdata').entries)
+                self.play_files_on_dropbox = len(self.dbx.files_list_folder(self.github_play_folder).entries)
                 target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                              self.generations_to_keep * self.play_files_per_generation)
                 print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
@@ -228,7 +229,7 @@ class EvolverWorker:
 
     def load_play_data(self):
         filenames=[]
-        for entry in self.dbx.files_list_folder('/pdata').entries:
+        for entry in self.dbx.files_list_folder(self.github_play_folder).entries:
             filenames.append(entry.name)
         print('Now Filename has this number of names:',len(filenames))
         print('Randomly picking files for training...')
@@ -238,9 +239,9 @@ class EvolverWorker:
         
         self.remove_all_play_data()
         
-        for entry in self.dbx.files_list_folder('/pdata').entries:
+        for entry in self.dbx.files_list_folder(self.github_play_folder).entries:
             if(entry.name in filenames):
-                md, res = self.dbx.files_download('/pdata/'+entry.name)
+                md, res = self.dbx.files_download(self.github_play_folder+entry.name)
                 with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/play_data/'+entry.name, 'wb') as f:  
                 #with open('./data/play_data/'+entry.name, 'wb') as f:  
                     f.write(res.content)
@@ -569,7 +570,7 @@ class EvolverWorker:
         # Saving File to Drop Box - AlphaZero Version
         target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
              self.generations_to_keep * self.play_files_per_generation)
-        self.play_files_on_dropbox = len(self.dbx.files_list_folder('/pdata').entries)
+        self.play_files_on_dropbox = len(self.dbx.files_list_folder(self.github_play_folder).entries)
         
         #if(self.play_files_on_dropbox < target):
         #    print('Contributing self-play games to Dropbox...')
@@ -578,10 +579,10 @@ class EvolverWorker:
         #    res = self.dbx.files_upload(data, '/play_data/'+filename, dropbox.files.WriteMode.add, mute=True)
         #else:
         print('Removing 1 old file & Contributing self-play games to Dropbox...')
-        self.dbx.files_delete('/pdata/'+self.dbx.files_list_folder('/pdata').entries[0].name)
+        self.dbx.files_delete(self.github_play_folder+self.dbx.files_list_folder(self.github_play_folder).entries[0].name)
         with open(path, 'rb') as f:
             data = f.read()
-        res = self.dbx.files_upload(data, '/pdata/'+filename, dropbox.files.WriteMode.add, mute=True)
+        res = self.dbx.files_upload(data, self.github_play_folder+filename, dropbox.files.WriteMode.add, mute=True)
             
         self.buffer = []
 
