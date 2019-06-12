@@ -241,7 +241,7 @@ class EvolverWorker:
         
         for entry in self.dbx.files_list_folder(self.github_play_folder).entries:
             if(entry.name in filenames):
-                md, res = self.dbx.files_download(self.github_play_folder+entry.name)
+                md, res = self.dbx.files_download(self.github_play_folder+'/'+entry.name)
                 with open('FullSantoriniAZ-Dist/FullSanto - Distributed/data/play_data/'+entry.name, 'wb') as f:  
                 #with open('./data/play_data/'+entry.name, 'wb') as f:  
                     f.write(res.content)
@@ -582,7 +582,7 @@ class EvolverWorker:
         self.dbx.files_delete(self.github_play_folder+self.dbx.files_list_folder(self.github_play_folder).entries[0].name)
         with open(path, 'rb') as f:
             data = f.read()
-        res = self.dbx.files_upload(data, self.github_play_folder+filename, dropbox.files.WriteMode.add, mute=True)
+        res = self.dbx.files_upload(data, self.github_play_folder+'/'+filename, dropbox.files.WriteMode.add, mute=True)
             
         self.buffer = []
 
