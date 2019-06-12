@@ -37,6 +37,7 @@ class AssistantWorker:
         self.generations_to_keep = 30
         #self.min_play_files_to_learn = 0
         self.play_files_on_dropbox = 0
+        self.github_play_folder = '/play_data'
     def start(self):
         auth_token = 'UlBTypwXWYAAAAAAAAAAEP6hKysZi9cQKGZTmMu128TYEEig00w3b3mJ--b_6phN'
         self.dbx = dropbox.Dropbox(auth_token)  
@@ -57,7 +58,7 @@ class AssistantWorker:
 
                     target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                                  self.generations_to_keep * self.play_files_per_generation)
-                    self.play_files_on_dropbox = len(self.dbx.files_list_folder('/pdata').entries)
+                    self.play_files_on_dropbox = len(self.dbx.files_list_folder(self.github_play_folder).entries)
 
                     print('\nSelf-Play Files',self.play_files_on_dropbox,'out of',target,'\n')
 
@@ -100,7 +101,7 @@ class AssistantWorker:
             idx += 1
             
             try:
-                self.play_files_on_dropbox = len(self.dbx.files_list_folder('/pdata').entries)
+                self.play_files_on_dropbox = len(self.dbx.files_list_folder('self.github_play_folder).entries)
                 target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
                          self.generations_to_keep * self.play_files_per_generation)
                 #if(self.play_files_on_dropbox >= target):
@@ -415,7 +416,7 @@ class AssistantWorker:
         # Saving File to Drop Box
         target = min(int(self.dbx.files_list_folder('/target').entries[0].name),
              self.generations_to_keep * self.play_files_per_generation)
-        self.play_files_on_dropbox = len(self.dbx.files_list_folder('/pdata').entries)
+        self.play_files_on_dropbox = len(self.dbx.files_list_folder('self.github_play_folder).entries)
         
         #if(self.play_files_on_dropbox < target):
         #    print('Contributing self-play games to Dropbox...')
@@ -425,11 +426,11 @@ class AssistantWorker:
         #else:
         
         print('Removing 1 old file & Contributing self-play games to Dropbox...')
-        self.dbx.files_delete('/pdata/'+self.dbx.files_list_folder('/pdata').entries[0].name)
+        self.dbx.files_delete(self.github_play_folder+'/'+self.dbx.files_list_folder(self.github_play_folder).entries[0].name)
         
         with open(path, 'rb') as f:
             data = f.read()
-        res = self.dbx.files_upload(data, '/pdata/'+filename, dropbox.files.WriteMode.add, mute=True)
+        res = self.dbx.files_upload(data, self.github_play_folder+'/'+filename, dropbox.files.WriteMode.add, mute=True)
             
             #print('Sufficient games are in Dropbox.  Self Play games not saved.  Waiting for Training...')
             #time.sleep(60)
