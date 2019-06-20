@@ -37,7 +37,7 @@ class EvolverWorker:
         self.generations_to_keep = 30
         self.play_files_on_dropbox = 0
         #self.evaluate_retries = 999
-        self.github_play_folder = '/play_data'
+        self.github_play_folder = '/p_data'
     def start(self):
         auth_token = 'UlBTypwXWYAAAAAAAAAAEP6hKysZi9cQKGZTmMu128TYEEig00w3b3mJ--b_6phN'
         self.dbx = dropbox.Dropbox(auth_token)  
